@@ -1,0 +1,2 @@
+server.host=${server.host}
+server.port=9092

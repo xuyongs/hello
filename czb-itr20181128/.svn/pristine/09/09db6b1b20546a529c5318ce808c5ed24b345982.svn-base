@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.park.mapper.ParkCarStateMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.park.model.ParkCarStateModel" >
+        <id column="id" property="id"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="plate_num" property="plateNum"/>
+		<result column="state" property="state"/>
+		<result column="in_date" property="inDate"/>
+		<result column="in_log_id" property="inLogId"/>
+		<result column="out_date" property="outDate"/>
+		<result column="out_log_id" property="outLogId"/>
+		
+
+    </resultMap>
+  
+
+    <!-- park_car_state 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, park_code, plate_num, state, in_date, in_log_id, out_date, out_log_id
+    </sql>
+  
+    <!-- 查询条件
+    <if test="inDate != null" >
+				and in_date = #{inDate}
+			</if>
+    <if test="outDate != null" >
+				and out_date = #{outDate}
+			</if>
+     
+      <if test="inDate != null" >
+				<![CDATA[ and  create_time>= date_format(#{startTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="outDate != null" >
+				<![CDATA[ and create_date <= date_format(#{endTime}, '%Y-%m-%d') ]]>
+			</if>
+     
+     
+     -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="parkCode != null" >
+				and park_code = #{parkCode}
+			</if>
+			<if test="plateNum != null" >
+				and plate_num LIKE CONCAT(CONCAT('%', #{plateNum}), '%')
+			</if>
+			<if test="state != null" >
+				and state = #{state}
+			</if>
+			
+			<if test="inLogId != null" >
+				and in_log_id = #{inLogId}
+			</if>
+			
+			<if test="outLogId != null" >
+				and out_log_id = #{outLogId}
+			</if>
+			
+          <if test="inDate != null" >
+				and in_date = #{inDate}
+			</if>
+    <if test="outDate != null" >
+				and out_date = #{outDate}
+			</if>
+           <if test="inDatestartTimeNew != null and inDatestartTimeNew != ''">
+				<![CDATA[ and in_date >= date_format(#{inDatestartTimeNew}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="inDateendTimeNew != null and outDateendTimeNew != ''">
+				<![CDATA[ and in_date <= date_format(#{inDateendTimeNew}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="outDatestartTimeNew != null and inDatestartTimeNew != ''">
+				<![CDATA[ and out_date >= date_format(#{outDatestartTimeNew}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="outDateendTimeNew != null and outDateendTimeNew != ''">
+				<![CDATA[ and out_date <= date_format(#{outDateendTimeNew}, '%Y-%m-%d') ]]>
+			</if>
+           
+		</where>
+    </sql>
+    
+     
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into park_car_state (id, park_code, plate_num, state, in_date, in_log_id, out_date, out_log_id)
+        values (#{id}, #{parkCode}, #{plateNum}, #{state}, #{inDate}, #{inLogId}, #{outDate}, #{outLogId})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update park_car_state
+			set
+				id=#{id}, 
+				park_code=#{parkCode}, 
+				plate_num=#{plateNum}, 
+				state=#{state}, 
+				in_date=#{inDate}, 
+				in_log_id=#{inLogId}, 
+				out_date=#{outDate}, 
+				out_log_id=#{outLogId}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update park_car_state
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="parkCode != null  ">
+						park_code=#{parkCode},
+                    </if>
+                    <if test="plateNum != null  ">
+						plate_num=#{plateNum},
+                    </if>
+                    <if test="state != null  ">
+						state=#{state},
+                    </if>
+                    <if test="inDate != null  ">
+						in_date=#{inDate},
+                    </if>
+                    <if test="inLogId != null  ">
+						in_log_id=#{inLogId},
+                    </if>
+                    <if test="outDate != null  ">
+						out_date=#{outDate},
+                    </if>
+                    <if test="outLogId != null  ">
+						out_log_id=#{outLogId},
+                    </if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from park_car_state
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from park_car_state
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from park_car_state
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        from park_car_state 
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+    
+    <!-- 查询车辆状态信息-->
+    <select id="selectByPlateNumAndParkCode" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from park_car_state
+		where park_code = #{parkCode} and plate_num=#{plateNum}
+    </select>
+    
+    
+</mapper>

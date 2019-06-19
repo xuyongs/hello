@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.TransmaticLogMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.TransmaticLogModel" >
+        <id column="id" property="id"/>
+		<result column="carport_id" property="carportId"/>
+		<result column="buyer_id" property="buyerId"/>
+		<result column="seller_id" property="sellerId"/>
+		<result column="price" property="price"/>
+		<result column="qunatity" property="qunatity"/>
+		<result column="remark" property="remark"/>
+		<result column="start_date" property="startDate"/>
+		<result column="end_date" property="endDate"/>
+		<result column="create_date" property="createDate"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="ref_id" property="refId"/>
+		<result column="is_del" property="isDel"/>
+    </resultMap>
+
+    <!-- app_version_info 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, carport_id, buyer_id, seller_id, price, qunatity, remark, start_date , end_date  , create_date, update_time ,ref_id ,is_del </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="carportId != null" >
+				and carport_id = #{carportId}
+			</if>
+			<if test="buyerId != null" >
+				and buyer_id = #{buyerId}
+			</if>
+			<if test="sellerId != null" >
+				and seller_id = #{sellerId}
+			</if>
+			<if test="price != null" >
+				and price = #{price}
+			</if>
+			<if test="qunatity != null" >
+				and qunatity = #{qunatity}
+			</if>
+			<if test="remark != null" >
+				and remark = #{remark}
+			</if>
+			<if test="isDel != null" >
+				and is_del = #{isDel}
+			</if>
+			<if test="refId != null" >
+				and ref_id = #{refId}
+			</if>
+			<if test="startTime != null" >
+				and start_date = #{startTime}
+			</if>
+			<if test="endDate != null" >
+				and end_date = #{endDate}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and start_date >= date_format(${startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and start_date <= date_format(${endTime}, '%Y-%m-%d') ]]>
+            </if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into transmatic_log (id, carport_id, buyer_id, seller_id, price, qunatity, remark,create_date,  update_time,start_date,end_date, ref_id ,is_del )
+        values (#{id}, #{carportId}, #{buyerId}, #{sellerId}, #{price}, #{qunatity}, #{remark},#{createDate}, #{updateTime},#{startDate},#{endDate}, #{refId} ,#{isDel} )
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update transmatic_log
+			set
+				id=#{id}, 
+				carport_id=#{carportId},
+				buyer_id=#{buyerId},
+				seller_id=#{sellerId},
+				price=#{price},
+				qunatity=#{qunatity},
+				remark=#{remark},
+				is_del=#{isDel},
+				ref_id=#{refId}
+				create_date=#{createDate},
+				update_time=#{updateTime}
+				start_date=#{startDate},
+				end_date=#{endDate}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update transmatic_log
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+					<if test="carportId != null" >
+						 carport_id = #{carportId},
+					</if>
+					<if test="buyerId != null" >
+						 buyer_id = #{buyerId},
+					</if>
+					<if test="sellerId != null" >
+						 seller_id = #{sellerId},
+					</if>
+					<if test="price != null" >
+						price = #{price},
+					</if>
+					<if test="qunatity != null" >
+						 qunatity = #{qunatity},
+					</if>
+					<if test="remark != null" >
+						 remark = #{remark},
+					</if>
+					<if test="isDel != null" >
+						 is_del = #{isDel},
+					</if>
+					<if test="refId != null" >
+						ref_id = #{refId},
+					</if>
+                    <if test="createDate != null  ">
+						create_date=#{createDate},
+                    </if>
+                    <if test="updateTime != null  ">
+						update_time=#{updateTime},
+                    </if>
+					<if test="startDate != null  ">
+						start_date=#{startDate},
+					</if>
+					<if test="endDate != null  ">
+						end_date=#{endDate},
+					</if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from transmatic_log
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from transmatic_log
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from transmatic_log
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from transmatic_log
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+</mapper>

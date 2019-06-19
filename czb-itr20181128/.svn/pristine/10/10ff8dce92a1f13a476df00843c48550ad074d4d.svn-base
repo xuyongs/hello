@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.park.mapper.ParkOrderInfoMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.park.model.ParkOrderInfoModel" >
+        <id column="id" property="id"/>
+		<result column="user_id" property="userId"/>
+		<result column="user_name" property="userName"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="plate_num" property="plateNum"/>
+		<result column="code" property="code"/>
+		<result column="total_price" property="totalPrice"/>
+		<result column="type" property="type"/>
+		<result column="state" property="state"/>
+		<result column="ref_id" property="refId"/>
+		<result column="remark" property="remark"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="model" property="model"/>
+		<result column="open_time" property="openTime"/>
+		<result column="quantity" property="quantity"/>
+		<result column="price" property="price"/>
+		<result column="start_time" property="startTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="pay_id" property="payId"/>
+		<result column="publish_type" property="publishType"/>
+    </resultMap>
+
+    <!-- park_order_info 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, user_id, user_name, park_code, plate_num, code, total_price, type, state, ref_id, remark, create_time, update_time, model, open_time, quantity, price, start_time, end_time, pay_id,publish_type
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="userName != null and userName != ''" >
+				and user_name LIKE CONCAT(CONCAT('%', #{userName}), '%')
+			</if>
+			<if test="parkCode != null and parkCode != ''" >
+				and park_code LIKE CONCAT(CONCAT('%', #{parkCode}), '%')
+			</if>
+			<if test="plateNum != null and plateNum != ''" >
+				and plate_num LIKE CONCAT(CONCAT('%', #{plateNum}), '%')
+			</if>
+			<if test="code != null" >
+				and code = #{code}
+			</if>
+			<if test="totalPrice != null" >
+				and total_price = #{totalPrice}
+			</if>
+			<if test="type != null and type != ''" >
+				and type =#{type}
+			</if>
+			<if test="state != null and state != ''" >
+				and state = #{state}
+			</if>
+			<if test="refId != null" >
+				and ref_id = #{refId}
+			</if>
+			<if test="remark != null" >
+				and remark = #{remark}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="updateTime != null" >
+				and update_time = #{updateTime}
+			</if>
+			<if test="model != null" >
+				and model = #{model}
+			</if>
+			<if test="openTime != null" >
+				and open_time = #{openTime}
+			</if>
+			<if test="quantity != null" >
+				and quantity = #{quantity}
+			</if>
+			<if test="price != null" >
+				and price = #{price}
+			</if>
+			<if test="startTime != null" >
+				and start_time = #{startTime}
+			</if>
+			<if test="endTime != null" >
+				and end_time = #{endTime}
+			</if>
+			<if test="payId != null" >
+				and pay_id = #{payId}
+			</if>
+            <if test="startTimeNew != null and startTimeNew != ''">
+                <![CDATA[ and create_time >= date_format(#{startTimeNew}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTimeNew != null and endTimeNew != ''">
+                <![CDATA[ and create_time <= date_format(#{endTimeNew}, '%Y-%m-%d') ]]>
+            </if>
+			<if test="publishType != null" >
+				and publish_type = #{publishType}
+			</if>
+
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into park_order_info (id, user_id, user_name, park_code, plate_num, code, total_price, type, state, ref_id, remark, create_time, update_time, model, open_time, quantity, price, start_time, end_time, pay_id,publish_type)
+        values (#{id}, #{userId}, #{userName}, #{parkCode}, #{plateNum}, #{code}, #{totalPrice}, #{type}, #{state}, #{refId}, #{remark}, #{createTime}, #{updateTime}, #{model}, #{openTime}, #{quantity}, #{price}, #{startTime}, #{endTime}, #{payId},#{publishType})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update park_order_info
+			set
+				id=#{id}, 
+				user_id=#{userId}, 
+				user_name=#{userName}, 
+				park_code=#{parkCode}, 
+				plate_num=#{plateNum}, 
+				code=#{code}, 
+				total_price=#{totalPrice}, 
+				type=#{type}, 
+				state=#{state}, 
+				ref_id=#{refId}, 
+				remark=#{remark}, 
+				create_time=#{createTime}, 
+				update_time=#{updateTime}, 
+				model=#{model}, 
+				open_time=#{openTime}, 
+				quantity=#{quantity}, 
+				price=#{price}, 
+				start_time=#{startTime}, 
+				end_time=#{endTime}, 
+				pay_id=#{payId},
+				publish_type=#{publishType}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update park_order_info
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="userName != null  ">
+						user_name=#{userName},
+                    </if>
+                    <if test="parkCode != null  ">
+						park_code=#{parkCode},
+                    </if>
+                    <if test="plateNum != null  ">
+						plate_num=#{plateNum},
+                    </if>
+                    <if test="code != null  ">
+						code=#{code},
+                    </if>
+                    <if test="totalPrice != null  ">
+						total_price=#{totalPrice},
+                    </if>
+                    <if test="type != null  ">
+						type=#{type},
+                    </if>
+                    <if test="state != null  ">
+						state=#{state},
+                    </if>
+                    <if test="refId != null  ">
+						ref_id=#{refId},
+                    </if>
+                    <if test="remark != null  ">
+						remark=#{remark},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                    <if test="updateTime != null  ">
+						update_time=#{updateTime},
+                    </if>
+                    <if test="model != null  ">
+						model=#{model},
+                    </if>
+                    <if test="openTime != null  ">
+						open_time=#{openTime},
+                    </if>
+                    <if test="quantity != null  ">
+						quantity=#{quantity},
+                    </if>
+                    <if test="price != null  ">
+						price=#{price},
+                    </if>
+                    <if test="startTime != null  ">
+						start_time=#{startTime},
+                    </if>
+                    <if test="endTime != null  ">
+						end_time=#{endTime},
+                    </if>
+                    <if test="payId != null  ">
+						pay_id=#{payId},
+                    </if>
+					<if test="publishType != null  ">
+						publish_type=#{publishType},
+					</if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from park_order_info
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from park_order_info
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from park_order_info
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from park_order_info
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+
+	<!--根据车牌号，停车场编码查询租车位订单。返回车位发布id-->
+	<select id="queryByCarportOrderId" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List"/>
+		from park_order_info
+		<include refid="Base_Where_Clause"/>
+	</select>
+	<!--根据车牌号，停车场编码查询租车位订单。返回车位发布id-->
+	<select id="selectIdByRefId" resultType="java.lang.Long" parameterType="Object">
+		select id
+		from park_order_info where ref_id=#{refId}
+	</select>
+	
+	<!--根据车牌号，停车场编码查询租车位订单。-->
+	<select id="selectByRefId" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List"/>
+		from park_order_info where ref_id=#{refId}
+	</select>
+	<!--查询停车场订单状态-->
+	<select id="selectByState" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="Base_Column_List"/>
+		from park_order_info 
+		where 
+		user_id=#{userId} AND state IN 
+		<foreach collection="state" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by create_time desc
+	</select>
+	 <!-- 根据userid查询 -->
+    <select id="selectByUserId"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from park_order_info
+			where
+			user_id=#{userId}
+    </select>
+    
+    <!-- 根据车牌号查询 -->
+     <select id="selectByPlateNum"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from park_order_info
+			where
+			plate_num=#{plateNum}
+    </select>
+   
+   <!-- 查询列表 ，导出Excel-->
+	<select id="selectDataToExcel" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List"/>
+		from park_order_info
+		<where>
+			<if test="userName != null and userName != ''" >
+				and user_name LIKE CONCAT(CONCAT('%', #{userName}), '%')
+			</if>
+			<if test="parkCode != null and parkCode != ''" >
+				and park_code LIKE CONCAT(CONCAT('%', #{parkCode}), '%')
+			</if>
+			<if test="plateNum != null and plateNum != ''" >
+				and plate_num LIKE CONCAT(CONCAT('%', #{plateNum}), '%')
+			</if>
+			<if test="type != null and type != ''" >
+				and type = #{type}
+			</if>
+			<if test="state != null and state != ''" >
+				and state = #{state}
+			</if>
+            <if test="startTimeNew != null and startTimeNew != ''">
+                <![CDATA[ and create_time >= date_format(#{startTimeNew}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTimeNew != null and endTimeNew != ''">
+                <![CDATA[ and create_time <= date_format(#{endTimeNew}, '%Y-%m-%d') ]]>
+            </if>
+
+		</where>
+	</select>
+   
+    
+</mapper>

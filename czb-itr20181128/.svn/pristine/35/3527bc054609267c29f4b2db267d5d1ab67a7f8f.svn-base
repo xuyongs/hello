@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.park.mapper.ParkSysInfoMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.park.model.ParkSysInfoModel" >
+        <id column="id" property="id"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="type" property="type"/>
+		<result column="name" property="name"/>
+		<result column="title" property="title"/>
+		<result column="des" property="des"/>
+		<result column="price_des" property="priceDes"/>
+		<result column="city" property="city"/>
+		<result column="area" property="area"/>
+		<result column="addr" property="addr"/>
+		<result column="open_time" property="openTime"/>
+		<result column="contacter" property="contacter"/>
+		<result column="phone" property="phone"/>
+		<result column="total_space" property="totalSpace"/>
+		<result column="remain_space" property="remainSpace"/>
+		<result column="state" property="state"/>
+		<result column="user_id" property="userId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="construction_type" property="constructionType"/>
+		<result column="img_url" property="imgUrl"/>
+		<result column="max_amount" property="maxAmount"/>
+		<result column="ten_minute_price" property="tenMinutePrice"/>
+    </resultMap>
+
+    <!-- park_sys_info 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, park_code, type, name, title, des, price_des, city, area, addr, open_time, contacter, phone, total_space, remain_space, state, user_id, create_time, update_time,construction_type,img_url,max_amount,ten_minute_price
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="parkCode != null" >
+				and park_code LIKE CONCAT(CONCAT('%', #{parkCode}), '%')
+			</if>
+			<if test="type != null" >
+				and type = #{type}
+			</if>
+			<if test="name != null" >
+				and name LIKE CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			<if test="title != null" >
+				and title = #{title}
+			</if>
+			<if test="des != null" >
+				and des LIKE CONCAT(CONCAT('%', #{des}), '%')
+			</if>
+			<if test="priceDes != null" >
+				and price_des = #{priceDes}
+			</if>
+			<if test="city != null" >
+				and city = #{city}
+			</if>
+			<if test="area != null" >
+				and area LIKE CONCAT(CONCAT('%', #{area}), '%')
+			</if>
+			<if test="addr != null" >
+				and addr LIKE CONCAT(CONCAT('%', #{addr}), '%')
+			</if>
+			<if test="openTime != null" >
+				and open_time LIKE CONCAT(CONCAT('%', #{openTime}), '%')
+			</if>
+			<if test="contacter != null" >
+				and contacter = #{contacter}
+			</if>
+			<if test="phone != null" >
+				and phone LIKE CONCAT(CONCAT('%', #{phone}), '%')
+			</if>
+			<if test="totalSpace != null" >
+				and total_space = #{totalSpace}
+			</if>
+			<if test="remainSpace != null" >
+				and remain_space = #{remainSpace}
+			</if>
+			<if test="state != null" >
+				and state = #{state}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="updateTime != null" >
+				and update_time = #{updateTime}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_time >= date_format(#{startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_time <= date_format(#{endTime}, '%Y-%m-%d') ]]>
+            </if>
+			<if test="constructionType != null" >
+				and construction_type = #{constructionType}
+			</if>
+			<if test="maxAmount != null" >
+				and max_amount = #{maxAmount}
+			</if>
+			<if test="tenMinutePrice != null" >
+				and ten_minute_price = #{tenMinutePrice}
+			</if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into park_sys_info (id, park_code, type, name, title, des, price_des, city, area, addr, open_time, contacter, phone, total_space, remain_space, state, user_id, create_time, update_time,construction_type,max_amount,ten_minute_price)
+        values (#{id}, #{parkCode}, #{type}, #{name}, #{title}, #{des}, #{priceDes}, #{city}, #{area}, #{addr}, #{openTime}, #{contacter}, #{phone}, #{totalSpace}, #{remainSpace}, #{state}, #{userId}, #{createTime}, #{updateTime} , #{constructionType},${maxAmount},${tenMinutePrice})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update park_sys_info
+			set
+				id=#{id}, 
+				park_code=#{parkCode}, 
+				type=#{type}, 
+				name=#{name}, 
+				title=#{title}, 
+				des=#{des}, 
+				price_des=#{priceDes}, 
+				city=#{city}, 
+				area=#{area}, 
+				addr=#{addr}, 
+				open_time=#{openTime}, 
+				contacter=#{contacter}, 
+				phone=#{phone}, 
+				total_space=#{totalSpace}, 
+				remain_space=#{remainSpace}, 
+				state=#{state}, 
+				user_id=#{userId}, 
+				create_time=#{createTime}, 
+				update_time=#{updateTime},
+				construction_type=#{constructionType},
+				max_amount=#{maxAmount},
+				ten_minute_price=#{tenMinutePrice},
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update park_sys_info
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="parkCode != null  ">
+						park_code=#{parkCode},
+                    </if>
+                    <if test="type != null  ">
+						type=#{type},
+                    </if>
+                    <if test="name != null  ">
+						name=#{name},
+                    </if>
+                    <if test="title != null  ">
+						title=#{title},
+                    </if>
+                    <if test="des != null  ">
+						des=#{des},
+                    </if>
+                    <if test="priceDes != null  ">
+						price_des=#{priceDes},
+                    </if>
+                    <if test="city != null  ">
+						city=#{city},
+                    </if>
+                    <if test="area != null  ">
+						area=#{area},
+                    </if>
+                    <if test="addr != null  ">
+						addr=#{addr},
+                    </if>
+                    <if test="openTime != null  ">
+						open_time=#{openTime},
+                    </if>
+                    <if test="contacter != null  ">
+						contacter=#{contacter},
+                    </if>
+                    <if test="phone != null  ">
+						phone=#{phone},
+                    </if>
+                    <if test="totalSpace != null  ">
+						total_space=#{totalSpace},
+                    </if>
+                    <if test="remainSpace != null  ">
+						remain_space=#{remainSpace},
+                    </if>
+                    <if test="state != null  ">
+						state=#{state},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                    <if test="updateTime != null  ">
+						update_time=#{updateTime},
+                    </if>
+					<if test="constructionType != null  ">
+						construction_type=#{constructionType},
+					</if>
+					<if test="maxAmount != null  ">
+						max_amount=#{maxAmount},
+					</if>
+					<if test="tenMinutePrice != null  ">
+						ten_minute_price=#{tenMinutePrice},
+					</if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from park_sys_info
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from park_sys_info
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from park_sys_info
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from park_sys_info
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+    
+    <!-- 查询停车场编码 -->
+    <select id="selParkCode" resultType="java.lang.String" parameterType="Object">
+        select park_code from park_sys_info
+    </select>
+    
+    
+</mapper>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.CarportBuyLogMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.CarportBuyLogModel" >
+        <id column="id" property="id"/>
+		<result column="carport_id" property="carportId"/>
+		<result column="sart_time" property="sartTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="state" property="state"/>
+		<result column="user_id" property="userId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+        <result column="publish_type" property="publishType"/>
+    </resultMap>
+
+    <!-- carport_buy_log 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, carport_id, sart_time, end_time, state, user_id, create_time, update_time
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="carportId != null" >
+				and carport_id = #{carportId}
+			</if>
+			<if test="sartTime != null" >
+				and sart_time = #{sartTime}
+			</if>
+			<if test="endTime != null" >
+				and end_time = #{endTime}
+			</if>
+			<if test="state != null" >
+				and state = #{state}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="updateTime != null" >
+				and update_time = #{updateTime}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_date >= date_format(${startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_date <= date_format(${endTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="publishType != null" >
+                and publish_type = #{publishType}
+            </if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into carport_buy_log (id, carport_id, sart_time, end_time, state, user_id, create_time, update_time,publish_type)
+        values (#{id}, #{carportId}, #{sartTime}, #{endTime}, #{state}, #{userId}, #{createTime}, #{updateTime},#{publishType})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update carport_buy_log
+			set
+				id=#{id}, 
+				carport_id=#{carportId}, 
+				sart_time=#{sartTime}, 
+				end_time=#{endTime}, 
+				state=#{state}, 
+				user_id=#{userId}, 
+				create_time=#{createTime}, 
+				update_time=#{updateTime},
+				publish_type=#{publishType}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update carport_buy_log
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="carportId != null  ">
+						carport_id=#{carportId},
+                    </if>
+                    <if test="sartTime != null  ">
+						sart_time=#{sartTime},
+                    </if>
+                    <if test="endTime != null  ">
+						end_time=#{endTime},
+                    </if>
+                    <if test="state != null  ">
+						state=#{state},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                    <if test="updateTime != null  ">
+						update_time=#{updateTime},
+                    </if>
+                    <if test="publishType != null  ">
+                        publish_type=#{publishType},
+                    </if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from carport_buy_log
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from carport_buy_log
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from carport_buy_log
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from carport_buy_log
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+    
+    <!-- 根据id查询 -->
+    <select id="selectByCarportId"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from carport_buy_log
+			where
+				carport_id=#{id}
+    </select>
+    
+</mapper>

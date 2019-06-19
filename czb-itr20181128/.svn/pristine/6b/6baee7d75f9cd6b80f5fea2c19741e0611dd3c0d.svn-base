@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/czb-itr.iml" filepath="$PROJECT_DIR$/czb-itr.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stopbar-itr-client/stopbar-itr-client.iml" filepath="$PROJECT_DIR$/stopbar-itr-client/stopbar-itr-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stopbar-itr-common/stopbar-itr-common.iml" filepath="$PROJECT_DIR$/stopbar-itr-common/stopbar-itr-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stopbar-itr-core/stopbar-itr-core.iml" filepath="$PROJECT_DIR$/stopbar-itr-core/stopbar-itr-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stopbar-itr-public/stopbar-itr-public.iml" filepath="$PROJECT_DIR$/stopbar-itr-public/stopbar-itr-public.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stopbar-itr-restful/stopbar-itr-restful.iml" filepath="$PROJECT_DIR$/stopbar-itr-restful/stopbar-itr-restful.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stopbar-itr-server/stopbar-itr-server.iml" filepath="$PROJECT_DIR$/stopbar-itr-server/stopbar-itr-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stopbar-itr-web/stopbar-itr-web.iml" filepath="$PROJECT_DIR$/stopbar-itr-web/stopbar-itr-web.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.LocaInfoMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.LocaInfoModel" >
+        <id column="id" property="id"/>
+		<result column="type" property="type"/>
+		<result column="ref_id" property="refId"/>
+		<result column="map_lng" property="mapLng"/>
+		<result column="map_lat" property="mapLat"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- loca_info 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, type, ref_id, map_lng, map_lat, create_time, update_time
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="type != null" >
+				and type = #{type}
+			</if>
+			<if test="refId != null" >
+				and ref_id = #{refId}
+			</if>
+			<if test="mapLng != null" >
+				and map_lng = #{mapLng}
+			</if>
+			<if test="mapLat != null" >
+				and map_lat = #{mapLat}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="updateTime != null" >
+				and update_time = #{updateTime}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_date >= date_format(${startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_date <= date_format(${endTime}, '%Y-%m-%d') ]]>
+            </if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into loca_info (id, type, ref_id, map_lng, map_lat, create_time, update_time)
+        values (#{id}, #{type}, #{refId}, #{mapLng}, #{mapLat}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update loca_info
+			set
+				id=#{id}, 
+				type=#{type}, 
+				ref_id=#{refId}, 
+				map_lng=#{mapLng}, 
+				map_lat=#{mapLat}, 
+				create_time=#{createTime}, 
+				update_time=#{updateTime}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update loca_info
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="type != null  ">
+						type=#{type},
+                    </if>
+                    <if test="refId != null  ">
+						ref_id=#{refId},
+                    </if>
+                    <if test="mapLng != null  ">
+						map_lng=#{mapLng},
+                    </if>
+                    <if test="mapLat != null  ">
+						map_lat=#{mapLat},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                    <if test="updateTime != null  ">
+						update_time=#{updateTime},
+                    </if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from loca_info
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from loca_info
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from loca_info
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from loca_info
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+
+    <!-- 添加距离字段 -->
+    <resultMap id="BaseResultMap2" type="com.agent.czb.core.sys.model.LocaInfoModel" >
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="ref_id" property="refId"/>
+        <result column="map_lng" property="mapLng"/>
+        <result column="map_lat" property="mapLat"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="distance" property="distance"/>
+    </resultMap>
+
+    <!-- 查询最近的车位列表 -->
+    <select id="delByType" parameterType="Object">
+        delete from loca_info
+			where type = #{type} and ref_id = #{refId}
+    </select>
+
+    <!-- 查询最近的车位列表 -->
+    <select id="locaList2" resultMap="BaseResultMap" parameterType="Object">
+        SELECT <include refid="Base_Column_List"/>
+        FROM loca_info
+        <![CDATA[ WHERE type = ${type} AND map_lat > '${mapLat}'-2 AND map_lat < '${mapLat}'+2 AND map_lng > '${mapLng}'-2 AND map_lng < '${mapLng}'+2 ]]>
+        ORDER BY ACOS(SIN(('${mapLat}' * 3.1415) / 180) * SIN((map_lat * 3.1415) / 180) + COS(('${mapLat}' * 3.1415) / 180) * COS((map_lat * 3.1415) / 180) * COS(('${mapLng}'* 3.1415) / 180 - (map_lng * 3.1415) / 180)) * 6380 ASC
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+
+    <!-- 查询最近的车位列表 -->
+    <select id="locaList3" resultMap="BaseResultMap2" parameterType="Object">
+        SELECT <include refid="Base_Column_List"/>,
+        (POWER(MOD(ABS(map_lng - '${mapLng}'),360),2) + POWER(ABS(map_lat - '${mapLat}'),2)) AS distance
+        FROM loca_info WHERE type = ${type}
+        ORDER BY distance
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+
+    <select id="locaList" resultMap="BaseResultMap2" parameterType="Object">
+        SELECT * FROM (SELECT <include refid="Base_Column_List"/>,
+                  ROUND(6378.138*2*ASIN(SQRT(POW(SIN(('${mapLat}'*PI()/180-map_lat*PI()/180)/2),2)+COS('${mapLat}'*PI()/180)*COS(map_lat*PI()/180)*POW(SIN(('${mapLng}'*PI()/180-map_lng*PI()/180)/2),2)))*1000) AS distance
+                FROM loca_info WHERE type = #{type}
+        ) aa
+        <where>
+            <if test="distance != null and distance != ''">
+                <![CDATA[ AND aa.distance < #{distance} ]]>
+            </if>
+        </where>
+        ORDER BY aa.distance
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+    
+    
+    <!-- 根据id查询 -->
+    <select id="selectByRefId"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from loca_info
+			where
+				ref_id=#{refId}
+    </select>
+</mapper>

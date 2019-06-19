@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.park.mapper.PartSysUserMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.park.model.PartSysUserModel" >
+        <id column="id" property="id"/>
+		<result column="login_name" property="loginName"/>
+		<result column="login_pwd" property="loginPwd"/>
+		<result column="phone" property="phone"/>
+		<result column="email" property="email"/>
+		<result column="user_name" property="userName"/>
+		<result column="id_number" property="idNumber"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="state" property="state"/>
+		<result column="user_id" property="userId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- part_sys_user 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, login_name, login_pwd, phone, email, user_name, id_number, park_code, state, user_id, create_time, update_time
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="loginName != null" >
+				and login_name like CONCAT('%', #{loginName}, '%')
+			</if>
+			<if test="loginPwd != null" >
+				and login_pwd = #{loginPwd}
+			</if>
+			<if test="phone != null" >
+				and phone LIKE CONCAT(CONCAT('%', #{phone}), '%')
+			</if>
+			<if test="email != null" >
+				and email = #{email}
+			</if>
+			<if test="userName != null" >
+				and user_name = #{userName}
+			</if>
+			<if test="idNumber != null" >
+				and id_number = #{idNumber}
+			</if>
+			<if test="parkCode != null" >
+				and park_code like CONCAT('%', #{parkCode}, '%')
+			</if>
+			<if test="state != null" >
+				and state = #{state}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="updateTime != null" >
+				and update_time = #{updateTime}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_date >= date_format(${startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_date <= date_format(${endTime}, '%Y-%m-%d') ]]>
+            </if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into part_sys_user (id, login_name, login_pwd, phone, email, user_name, id_number, park_code, state, user_id, create_time, update_time)
+        values (#{id}, #{loginName}, #{loginPwd}, #{phone}, #{email}, #{userName}, #{idNumber}, #{parkCode}, #{state}, #{userId}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update part_sys_user
+			set
+				id=#{id}, 
+				login_name=#{loginName}, 
+				login_pwd=#{loginPwd}, 
+				phone=#{phone}, 
+				email=#{email}, 
+				user_name=#{userName}, 
+				id_number=#{idNumber}, 
+				park_code=#{parkCode}, 
+				state=#{state}, 
+				user_id=#{userId}, 
+				create_time=#{createTime}, 
+				update_time=#{updateTime}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update part_sys_user
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="loginName != null  ">
+						login_name=#{loginName},
+                    </if>
+                    <if test="loginPwd != null  ">
+						login_pwd=#{loginPwd},
+                    </if>
+                    <if test="phone != null  ">
+						phone=#{phone},
+                    </if>
+                    <if test="email != null  ">
+						email=#{email},
+                    </if>
+                    <if test="userName != null  ">
+						user_name=#{userName},
+                    </if>
+                    <if test="idNumber != null  ">
+						id_number=#{idNumber},
+                    </if>
+                    <if test="parkCode != null  ">
+						park_code=#{parkCode},
+                    </if>
+                    <if test="state != null  ">
+						state=#{state},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                    <if test="updateTime != null  ">
+						update_time=#{updateTime},
+                    </if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from part_sys_user
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from part_sys_user
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from part_sys_user
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from part_sys_user
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.PayOrderLogMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.PayOrderLogModel" >
+        <id column="pay_id" property="payId"/>
+		<result column="pay_type" property="payType"/>
+		<result column="pay_state" property="payState"/>
+		<result column="pay_no" property="payNo"/>
+		<result column="ref_type" property="refType"/>
+		<result column="ref_id" property="refId"/>
+		<result column="quantity" property="quantity"/>
+		<result column="price" property="price"/>
+		<result column="amount" property="amount"/>
+		<result column="user_id" property="userId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="pay_time" property="payTime"/>
+		<result column="coupon_id" property="userCouponId"/>
+    </resultMap>
+
+    <!-- pay_order_log 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		pay_id, pay_type, pay_state, pay_no, ref_type, ref_id, quantity, price, amount, user_id, create_time, pay_time,coupon_id
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="payId != null and payId != ''" >
+				and pay_id LIKE CONCAT(CONCAT('%', #{payId}), '%')
+			</if>
+			<if test="payType != null and payType != ''" >
+				and pay_type = #{payType}
+			</if>
+			<if test="payState != null and payState != ''" >
+				and pay_state = #{payState}
+			</if>
+			<!-- <if test="payNo != null" >
+				and pay_no = #{payNo}
+			</if> -->
+			<if test="payNo != null and payNo != ''" >
+				and pay_no like CONCAT ('%',#{payNo},'%')
+		   </if>
+			<if test="refType != null" >
+				and ref_type = #{refType}
+			</if>
+			<if test="refId != null and refId != ''" >
+				and ref_id = #{refId}
+			</if>
+			<if test="quantity != null" >
+				and quantity = #{quantity}
+			</if>
+			<if test="price != null" >
+				and price = #{price}
+			</if>
+			<if test="amount != null" >
+				and amount = #{amount}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="payTime != null" >
+				and pay_time = #{payTime}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_time >= date_format(#{startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_time <= date_format(#{endTime}, '%Y-%m-%d') ]]>
+            </if>
+			<if test="userCouponId != null">
+				and coupon_id = #{userCouponId}
+			</if>
+		</where>
+    </sql>
+    <!-- 查询条件 -->
+    	<sql id="Base_Where_Clause1">
+            <where>
+			<if test="payId != null" >
+				and pay_id = #{payId}
+			</if>
+			<if test="payType != null" >
+				and pay_type = #{payType}
+			</if>
+			<if test="payState != null" >
+				and pay_state = #{payState}
+			</if>
+			<!-- <if test="payNo != null" >
+				and pay_no = #{payNo}
+			</if> -->
+			<if test="payNo != null" >
+				and pay_no like CONCAT ('%',#{payNo},'%')
+		   </if>
+			<if test="refType != null" >
+				and ref_type = #{refType}
+			</if>
+			<if test="refId != null" >
+				and ref_id = #{refId}
+			</if>
+			<if test="quantity != null" >
+				and quantity = #{quantity}
+			</if>
+			<if test="price != null" >
+				and price = #{price}
+			</if>
+			<if test="amount != null" >
+				and amount = #{amount}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="payTime != null" >
+				and pay_time = #{payTime}
+			</if>
+			<if test="userCouponId != null">
+				and coupon_id = #{userCouponId}
+			</if>
+		</where>
+    </sql>
+   
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="payId">
+        insert into pay_order_log (pay_id, pay_type, pay_state, pay_no, ref_type, ref_id, quantity, price, amount, user_id, create_time, pay_time,coupon_id)
+        values (#{payId}, #{payType}, #{payState}, #{payNo}, #{refType}, #{refId}, #{quantity}, #{price}, #{amount}, #{userId}, #{createTime}, #{payTime}, #{userCouponId})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update pay_order_log
+			set
+				pay_id=#{payId}, 
+				pay_type=#{payType}, 
+				pay_state=#{payState}, 
+				pay_no=#{payNo}, 
+				
+				ref_type=#{refType}, 
+				ref_id=#{refId}, 
+				quantity=#{quantity}, 
+				price=#{price}, 
+				amount=#{amount}, 
+				user_id=#{userId}, 
+				create_time=#{createTime}, 
+				pay_time=#{payTime},
+				coupon_id=#{userCouponId}
+        	where
+				pay_id=#{payId}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update pay_order_log
+			set
+                <trim  suffixOverrides="," >
+                    <if test="payId != null  ">
+						pay_id=#{payId},
+                    </if>
+                    <if test="payType != null  ">
+						pay_type=#{payType},
+                    </if>
+                    <if test="payState != null  ">
+						pay_state=#{payState},
+                    </if>
+                    <if test="payNo != null  ">
+						pay_no=#{payNo},
+                    </if>
+                    <if test="refType != null  ">
+						ref_type=#{refType},
+                    </if>
+                    <if test="refId != null  ">
+						ref_id=#{refId},
+                    </if>
+                    <if test="quantity != null  ">
+						quantity=#{quantity},
+                    </if>
+                    <if test="price != null  ">
+						price=#{price},
+                    </if>
+                    <if test="amount != null  ">
+						amount=#{amount},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                    <if test="payTime != null  ">
+						pay_time=#{payTime},
+                    </if>
+					<if test="userCouponId != null  ">
+						coupon_id=#{userCouponId},
+					</if>
+                </trim>
+			where
+				pay_id=#{payId}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from pay_order_log
+			where
+				pay_id=#{payId}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from pay_order_log
+			where
+				pay_id=#{payId}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from pay_order_log
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from pay_order_log 
+        <include refid="Base_Where_Clause"/>
+        
+        <!-- <if test="payNo != null" >
+				and pay_no like CONCAT('%',#{payNo},'%')
+		</if> -->
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+    
+    <!-- 根据refId查询 -->
+    <select id="selectByRefId"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from pay_order_log
+			where
+				ref_id=#{parkOrderInfoId}
+    </select>
+    <!-- 查询未支付订单 -->
+    <!-- <select id="queryUnpaidList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from pay_order_log 
+        <include refid="Base_Where_Clause1"/>
+        
+    </select> -->
+    
+    <!-- 查询列表 ，导出Excel-->
+	<select id="selectDataToExcel" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List"/>
+		from pay_order_log
+		<where>
+			<if test="payId != null and payId != ''" >
+				and pay_id = #{payId}
+			</if>
+			<if test="payType != null and payType != ''" >
+				and pay_type = #{payType}
+			</if>
+			<if test="payState != null and payState != ''" >
+				and pay_state = #{payState}
+			</if>
+			<if test="payNo != null and payNo != ''" >
+				and pay_no like CONCAT ('%',#{payNo},'%')
+		   </if>
+			<if test="refId != null and refId != ''" >
+				and ref_id = #{refId}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_time >= date_format(#{startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_time <= date_format(#{endTime}, '%Y-%m-%d') ]]>
+            </if>
+		</where>
+	</select>
+</mapper>

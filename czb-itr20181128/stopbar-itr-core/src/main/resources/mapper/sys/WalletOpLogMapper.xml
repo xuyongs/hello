@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.WalletOpLogMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.WalletOpLogModel" >
+        <id column="id" property="id"/>
+		<result column="wallet_id" property="walletId"/>
+		<result column="op_type" property="opType"/>
+		<result column="type" property="type"/>
+		<result column="rf_id" property="rfId"/>
+		<result column="amount" property="amount"/>
+		<result column="balance" property="balance"/>
+		<result column="user_id" property="userId"/>
+		<result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- wallet_op_log 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, wallet_id, op_type, type, rf_id, amount, balance, user_id, create_time
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="walletId != null" >
+				and wallet_id = #{walletId}
+			</if>
+			<if test="opType != null" >
+				and op_type = #{opType}
+			</if>
+			<if test="type != null" >
+				and type = #{type}
+			</if>
+			<if test="rfId != null" >
+				and rf_id = #{rfId}
+			</if>
+			<if test="amount != null" >
+				and amount = #{amount}
+			</if>
+			<if test="balance != null" >
+				and balance = #{balance}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_date >= date_format(${startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_date <= date_format(${endTime}, '%Y-%m-%d') ]]>
+            </if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into wallet_op_log (id, wallet_id, op_type, type, rf_id, amount, balance, user_id, create_time)
+        values (#{id}, #{walletId}, #{opType}, #{type}, #{rfId}, #{amount}, #{balance}, #{userId}, #{createTime})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update wallet_op_log
+			set
+				id=#{id}, 
+				wallet_id=#{walletId}, 
+				op_type=#{opType}, 
+				type=#{type}, 
+				rf_id=#{rfId}, 
+				amount=#{amount}, 
+				balance=#{balance}, 
+				user_id=#{userId}, 
+				create_time=#{createTime}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update wallet_op_log
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="walletId != null  ">
+						wallet_id=#{walletId},
+                    </if>
+                    <if test="opType != null  ">
+						op_type=#{opType},
+                    </if>
+                    <if test="type != null  ">
+						type=#{type},
+                    </if>
+                    <if test="rfId != null  ">
+						rf_id=#{rfId},
+                    </if>
+                    <if test="amount != null  ">
+						amount=#{amount},
+                    </if>
+                    <if test="balance != null  ">
+						balance=#{balance},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from wallet_op_log
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from wallet_op_log
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from wallet_op_log
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from wallet_op_log
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+</mapper>

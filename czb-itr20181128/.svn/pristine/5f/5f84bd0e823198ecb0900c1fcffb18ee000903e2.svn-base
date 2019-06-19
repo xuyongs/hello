@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.park.mapper.ParkWhiteListMapper" >
+	<!-- Result Map-->
+	<resultMap id="BaseResultMap" type="com.agent.czb.core.park.model.ParkWhiteListModel" >
+		<id column="id" property="id"/>
+		<result column="user_id" property="userId"/>
+		<result column="code" property="code"/>
+		<result column="addr" property="addr"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="plate_num" property="plateNum"/>
+		<result column="user_name" property="userName"/>
+		<result column="start_time" property="startTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="state" property="state"/>
+		<result column="model" property="model"/>
+		<result column="open_time" property="openTime"/>
+		<result column="remark" property="remark"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="phone" property="phone"/>
+		<result column="exp_time" property="expTime"/>
+		<result column="is_exp" property="isExp"/>
+		<result column="carport_id" property="carportId"/>
+		<result column="comment" property="comment"/>
+	</resultMap>
+
+	<!-- park_white_list 表的所有字段 -->
+	<sql id="Base_Column_List" >
+		id, user_id, code, addr, park_code, plate_num, user_name, start_time, end_time, state, model, open_time, remark, create_time, update_time, phone, exp_time, is_exp, carport_id
+	</sql>
+
+	<!-- 查询条件 -->
+	<sql id="Base_Where_Clause">
+		<where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="code != null" >
+				and code LIKE CONCAT(CONCAT('%', #{code}), '%')
+			</if>
+			<if test="addr != null" >
+				and addr = #{addr}
+			</if>
+			<if test="parkCode != null" >
+				and park_code LIKE CONCAT(CONCAT('%', #{parkCode}), '%')
+			</if>
+			<if test="plateNum != null" >
+				and plate_num LIKE CONCAT(CONCAT('%', #{plateNum}), '%')
+			</if>
+			<if test="userName != null" >
+				and user_name LIKE CONCAT(CONCAT('%', #{userName}), '%')
+			</if>
+			<if test="startTime != null" >
+				and start_time = #{startTime}
+			</if>
+			<if test="endTime != null" >
+				and end_time = #{endTime}
+			</if>
+			<if test="state != null" >
+				and state = #{state}
+			</if>
+			<if test="model != null" >
+				and model = #{model}
+			</if>
+			<if test="openTime != null" >
+				and open_time = #{openTime}
+			</if>
+			<if test="remark != null" >
+				and remark = #{remark}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="updateTime != null" >
+				and update_time = #{updateTime}
+			</if>
+			<if test="phone != null" >
+				and phone LIKE CONCAT(CONCAT('%', #{phone}), '%')
+			</if>
+			<if test="expTime != null" >
+				and exp_time = #{expTime}
+			</if>
+			<if test="isExp != null" >
+				and is_exp = #{isExp}
+			</if>
+			<if test="carportId != null" >
+				and carport_id = #{carportId}
+			</if>
+			<if test="startTimeNew != null and startTimeNew != ''">
+				<![CDATA[ and create_time >= date_format(#{startTimeNew}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="endTimeNew != null and endTimeNew != ''">
+				<![CDATA[ and create_time <= date_format(#{endTimeNew}, '%Y-%m-%d') ]]>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 插入记录 -->
+	<insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+		insert into park_white_list (id, user_id, code, addr, park_code, plate_num, user_name, start_time, end_time, state, model, open_time, remark, create_time, update_time, phone, exp_time, is_exp, carport_id)
+		values (#{id}, #{userId}, #{code}, #{addr}, #{parkCode}, #{plateNum}, #{userName}, #{startTime}, #{endTime}, #{state}, #{model}, #{openTime}, #{remark}, #{createTime}, #{updateTime}, #{phone}, #{expTime}, #{isExp}, #{carportId})
+	</insert>
+
+	<!-- 根据id，修改记录-->
+	<update id="update" parameterType="Object" >
+		update park_white_list
+		set
+		id=#{id},
+		user_id=#{userId},
+		code=#{code},
+		addr=#{addr},
+		park_code=#{parkCode},
+		plate_num=#{plateNum},
+		user_name=#{userName},
+		start_time=#{startTime},
+		end_time=#{endTime},
+		state=#{state},
+		model=#{model},
+		open_time=#{openTime},
+		remark=#{remark},
+		create_time=#{createTime},
+		update_time=#{updateTime},
+		phone=#{phone},
+		exp_time=#{expTime},
+		is_exp=#{isExp},
+		carport_id=#{carportId}
+		where
+		id=#{id}
+	</update>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="updateBySelective" parameterType="Object" >
+		update park_white_list
+		set
+		<trim  suffixOverrides="," >
+			<if test="id != null  ">
+				id=#{id},
+			</if>
+			<if test="userId != null  ">
+				user_id=#{userId},
+			</if>
+			<if test="code != null  ">
+				code=#{code},
+			</if>
+			<if test="addr != null  ">
+				addr=#{addr},
+			</if>
+			<if test="parkCode != null  ">
+				park_code=#{parkCode},
+			</if>
+			<if test="plateNum != null  ">
+				plate_num=#{plateNum},
+			</if>
+			<if test="userName != null  ">
+				user_name=#{userName},
+			</if>
+			<if test="startTime != null  ">
+				start_time=#{startTime},
+			</if>
+			<if test="endTime != null  ">
+				end_time=#{endTime},
+			</if>
+			<if test="state != null  ">
+				state=#{state},
+			</if>
+			<if test="model != null  ">
+				model=#{model},
+			</if>
+			<if test="openTime != null  ">
+				open_time=#{openTime},
+			</if>
+			<if test="remark != null  ">
+				remark=#{remark},
+			</if>
+			<if test="createTime != null  ">
+				create_time=#{createTime},
+			</if>
+			<if test="updateTime != null  ">
+				update_time=#{updateTime},
+			</if>
+			<if test="phone != null  ">
+				phone=#{phone},
+			</if>
+			<if test="expTime != null  ">
+				exp_time=#{expTime},
+			</if>
+			<if test="isExp != null  ">
+				is_exp=#{isExp},
+			</if>
+			<if test="carportId != null  ">
+				carport_id=#{carportId},
+			</if>
+		</trim>
+		where
+		id=#{id}
+	</update>
+
+	<!-- 删除记录 -->
+	<delete id="delete" parameterType="Object">
+		delete from park_white_list
+		where
+		id=#{id}
+	</delete>
+
+	<!-- 根据id查询 -->
+	<select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from park_white_list
+		where
+		id=#{id}
+	</select>
+
+	<!-- 列表总数-->
+	<select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+		select count(1) from park_white_list
+		<include refid="Base_Where_Clause"/>
+	</select>
+
+	<!-- 查询列表 -->
+	<select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List"/>
+		from park_white_list
+		<include refid="Base_Where_Clause"/>
+		<if test="pagerOrder != null and pagerOrder != ''">
+			${pagerOrder}
+		</if>
+		<if test="pagerLimit != null and pagerLimit != ''">
+			${pagerLimit}
+		</if>
+	</select>
+
+	<select id="selectByCarportid" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from park_white_list
+		where
+		carport_id=#{carportId}
+	</select>
+
+	<update id="updateWhiteListExp">
+		update park_white_list set is_exp=0, carport_id=null where <![CDATA[ exp_time < now() ]]>
+	</update>
+		<!-- 根据停车场编码和车牌号查询 -->
+	<select id="selectByParkCodeAndPlateNum" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from park_white_list
+		<where>
+			<if test="parkCode != null" >
+				and park_code = #{parkCode}
+			</if>
+			<if test="plateNum != null" >
+				and plate_num = #{plateNum}
+			</if>
+			and <![CDATA[ end_time>SYSDATE() ]]> 
+		</where>
+	</select>
+	
+	<!-- 查询所有未过期数据-->
+	<select id="selectByEndtime" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from park_white_list
+		where <![CDATA[ end_time>SYSDATE() ]]> 
+	</select>
+	<!-- 根据userId查询 -->
+	<select id="selectByUserId" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from park_white_list
+		where
+		user_id=#{userId}
+	</select>
+		<!-- 查询在场内的所有共享车辆 -->
+	<select id="selectByState" resultMap="BaseResultMap" parameterType="Object">
+		select 
+		p.id AS id,
+		p.user_id AS user_id,
+		p.code AS code,
+		p.addr AS addr,
+		p.park_code AS park_code,
+		p.plate_num AS plate_num,
+		p.user_name AS user_name,
+		p.start_time AS start_time,
+		p.end_time AS end_time,
+		p.state AS state,
+		p.model AS model,
+		p.open_time AS open_time,
+		p.remark AS remark,
+		p.create_time AS create_time,
+		p.update_time AS update_time,
+		p.phone AS phone,
+		p.exp_time AS exp_time,
+		p.is_exp AS is_exp,
+		p.carport_id AS carport_id
+		from park_white_list p,park_car_state c
+		where
+		 p.park_code=c.park_code 
+		 AND p.plate_num=c.plate_num
+		 AND p.state=#{state}
+		 AND c.state='1';
+	</select>
+	<select id="selectByAdvance" resultMap="BaseResultMap" parameterType="Object">
+		select 
+		<!-- p.id AS id,
+		p.user_id AS user_id,
+		p.code AS code,
+		p.addr AS addr,
+		p.park_code AS park_code,
+		p.plate_num AS plate_num,
+		p.user_name AS user_name,
+		p.start_time AS start_time,
+		p.end_time AS end_time,
+		p.state AS state,
+		p.model AS model,
+		p.open_time AS open_time,
+		p.remark AS remark,
+		p.create_time AS create_time,
+		p.update_time AS update_time,
+		p.phone AS phone,
+		p.exp_time AS exp_time,
+		p.is_exp AS is_exp,
+		p.carport_id AS carport_id -->
+		<include refid="Base_Column_List" />
+		from park_white_list <!-- p,park_car_state c -->
+		where
+		 <!-- p.park_code=c.park_code 
+		 AND p.plate_num=c.plate_num
+		 AND p. -->state = #{state}
+	</select>
+	<!-- 插入记录 -->
+	<insert id="insertToTmp" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+		insert into park_white_list_tmp (user_id, code, addr, park_code, plate_num, user_name, start_time, end_time, state, model, open_time, remark, create_time, update_time, phone, exp_time, is_exp, carport_id,comment)
+		values (#{userId}, #{code}, #{addr}, #{parkCode}, #{plateNum}, #{userName}, #{startTime}, #{endTime}, #{state}, #{model}, #{openTime}, #{remark}, #{createTime}, #{updateTime}, #{phone}, #{expTime}, #{isExp}, #{carportId},#{comment})
+		ON DUPLICATE KEY UPDATE 
+		user_id =#{userId}, code=#{code}, addr=#{addr}, user_name=#{userName}, start_time=#{startTime}, end_time=#{endTime}, state=#{state}, model=#{model}, open_time=#{openTime}, remark=#{remark}, create_time=#{createTime}, update_time=#{updateTime}, phone=#{phone}, exp_time=#{expTime}, is_exp=#{isExp}, carport_id=#{carportId},comment=#{comment}
+	</insert>
+	
+	<!-- 根据车牌查询 -->
+	<select id="selectByPlateNum" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from park_white_list
+		where
+		plate_num=#{plateNum}
+	</select>
+	
+</mapper>

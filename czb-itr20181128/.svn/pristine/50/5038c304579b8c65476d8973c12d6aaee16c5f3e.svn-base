@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.UserInfoMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.UserInfoModel" >
+        <id column="id" property="id"/>
+		<result column="login_name" property="loginName"/>
+		<result column="login_pwd" property="loginPwd"/>
+		<result column="nick_name" property="nickName"/>
+		<result column="phone" property="phone"/>
+		<result column="signa" property="signa"/>
+		<result column="age" property="age"/>
+		<result column="sex" property="sex"/>
+		<result column="img_url" property="imgUrl"/>
+		<result column="email" property="email"/>
+		<result column="is_auth" property="isAuth"/>
+		<result column="user_name" property="userName"/>
+		<result column="id_number" property="idNumber"/>
+		<result column="state" property="state"/>
+		<result column="user_id" property="userId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="is_del" property="isDel"/>
+		<result column="scored" property="scored"/>
+    </resultMap>
+
+    <!-- user_info 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, login_name, login_pwd, nick_name, phone, signa, age, sex, img_url, email, is_auth, user_name, id_number, state, user_id, create_time, update_time, is_del,scored
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="loginName != null" >
+				and login_name LIKE CONCAT(CONCAT('%', #{loginName}), '%')
+			</if>
+			<if test="loginPwd != null" >
+				and login_pwd = #{loginPwd}
+			</if>
+			<if test="nickName != null" >
+				and nick_name LIKE CONCAT(CONCAT('%', #{nickName}), '%')
+			</if>
+			<if test="phone != null" >
+				and phone LIKE CONCAT(CONCAT('%', #{phone}), '%')
+			</if>
+			<if test="signa != null" >
+				and signa = #{signa}
+			</if>
+			<if test="age != null" >
+				and age = #{age}
+			</if>
+			<if test="sex != null" >
+				and sex = #{sex}
+			</if>
+			<if test="imgUrl != null" >
+				and img_url = #{imgUrl}
+			</if>
+			<if test="email != null" >
+				and email = #{email}
+			</if>
+			<if test="isAuth != null" >
+				and is_auth = #{isAuth}
+			</if>
+			<if test="userName != null" >
+				and user_name = #{userName}
+			</if>
+			<if test="idNumber != null" >
+				and id_number = #{idNumber}
+			</if>
+			<if test="state != null" >
+				and state = #{state}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="updateTime != null" >
+				and update_time = #{updateTime}
+			</if>
+			<if test="isDel != null" >
+				and is_del = #{isDel}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_time >= date_format(#{startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_time <= date_format(#{endTime}, '%Y-%m-%d') ]]>
+            </if>
+			<if test="scored != null" >
+				and scored = #{scored}
+			</if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into user_info (id, login_name, login_pwd, nick_name, phone, signa, age, sex, img_url, email, is_auth, user_name, id_number, state, user_id, create_time, update_time, is_del,scored)
+        values (#{id}, #{loginName}, #{loginPwd}, #{nickName}, #{phone}, #{signa}, #{age}, #{sex}, #{imgUrl}, #{email}, #{isAuth}, #{userName}, #{idNumber}, #{state}, #{userId}, #{createTime}, #{updateTime}, #{isDel},#{scored})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update user_info
+			set
+				id=#{id}, 
+				login_name=#{loginName}, 
+				login_pwd=#{loginPwd}, 
+				nick_name=#{nickName}, 
+				phone=#{phone}, 
+				signa=#{signa}, 
+				age=#{age}, 
+				sex=#{sex}, 
+				img_url=#{imgUrl}, 
+				email=#{email}, 
+				is_auth=#{isAuth}, 
+				user_name=#{userName}, 
+				id_number=#{idNumber}, 
+				state=#{state}, 
+				user_id=#{userId}, 
+				create_time=#{createTime}, 
+				update_time=#{updateTime}, 
+				is_del=#{isDel},
+				scored=#{scored}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update user_info
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="loginName != null  ">
+						login_name=#{loginName},
+                    </if>
+                    <if test="loginPwd != null  ">
+						login_pwd=#{loginPwd},
+                    </if>
+                    <if test="nickName != null  ">
+						nick_name=#{nickName},
+                    </if>
+                    <if test="phone != null  ">
+						phone LIKE CONCAT(CONCAT('%', #{phone}), '%')
+                    </if>
+                    <if test="signa != null  ">
+						signa=#{signa},
+                    </if>
+                    <if test="age != null  ">
+						age=#{age},
+                    </if>
+                    <if test="sex != null  ">
+						sex=#{sex},
+                    </if>
+                    <if test="imgUrl != null  ">
+						img_url=#{imgUrl},
+                    </if>
+                    <if test="email != null  ">
+						email=#{email},
+                    </if>
+                    <if test="isAuth != null  ">
+						is_auth=#{isAuth},
+                    </if>
+                    <if test="userName != null  ">
+						user_name=#{userName},
+                    </if>
+                    <if test="idNumber != null  ">
+						id_number=#{idNumber},
+                    </if>
+                    <if test="state != null  ">
+						state=#{state},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                    <if test="updateTime != null  ">
+						update_time=#{updateTime},
+                    </if>
+                    <if test="isDel != null  ">
+						is_del=#{isDel},
+                    </if>
+					<if test="scored != null  ">
+						scored=#{scored},
+					</if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from user_info
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from user_info
+			where
+				id=#{id}
+    </select>
+
+	<select id="sysUserById"  resultType="java.lang.String" parameterType="Object">
+		select userName
+		from sys_user
+		where
+		id=#{id}
+	</select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from user_info
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from user_info
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+
+	<!-- 查询列表 -->
+	<select id="userList" resultMap="BaseResultMap">
+		select phone, login_pwd from user_info
+	</select>
+	 <!-- 根据id查询 -->
+    <select id="selectUserIdByPhone"  resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" />
+        	from user_info
+			where
+				id=#{userId}
+    </select>
+</mapper>

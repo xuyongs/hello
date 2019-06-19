@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.park.mapper.NewParkOrderInfoMapper" >
+	<!-- Result Map-->
+	
+	<resultMap id="BaseResultMap" type="com.agent.czb.core.park.model.NewParkOrderInfoModel" >
+		<result column="user_id" property="userId"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="plate_num" property="plateNum"/>
+		<association property="newlocaInfoModel" javaType="com.agent.czb.core.sys.model.NewLocaInfoModel">
+			<result column="map_lat" property="mapLat"></result>
+			<result column="map_lng" property="mapLng"></result>
+		</association>		
+	</resultMap>
+	<!--通过user_id,park_code,plate_num查询经纬度-->
+	<sql id="Base_Where_Clause">
+		<if test="userId != null" >
+				and user_id = #{userId}
+		</if>
+		<if test="parkCode != null" >
+				and park_code = #{parkCode}
+		</if>
+		<if test="plateNum != null" >
+				and plate_num = #{plateNum}
+		</if>
+	</sql>
+    <!--用ref_id进行表的关联-->
+	<select id="queryMapLngAndMapLatInformation" resultMap="BaseResultMap" parameterType="Object">
+    	select  map_lat,map_lng from park_order_info 
+         INNER JOIN loca_info on park_order_info.ref_id=
+          loca_info.ref_id
+    	<include refid="Base_Where_Clause"/>
+    </select>
+</mapper>

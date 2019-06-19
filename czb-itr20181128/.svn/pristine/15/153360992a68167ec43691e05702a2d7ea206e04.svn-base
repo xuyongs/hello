@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.user.mapper.NewParkWhiteListMapper" >
+    <!-- Result Map-->
+    <resultMap id="NewParkWhiteListResultMap" type="com.agent.czb.core.sys.model.NewParkWhiteList" >
+    	<result column="id" property="id"/>
+		<result column="park_code" property="park_code"/>
+		<result column="plate_num" property="plate_num"/>
+		<result column="phone" property="phone"/>
+		<result column="start_time" property="start_time"/>
+		<result column="end_time" property="end_time"/>
+    </resultMap>
+    <!--users表中所有的字段  -->   
+    <sql id="Query_list">
+    id,park_code,plate_num,phone,start_time,end_time
+    </sql>
+    
+	<!-- 查询条件 -->    
+	 <sql id="NewParkWhiteList_Query_Terms">
+	 <where>
+                <![CDATA[ and end_time <= SYSDATE() ]]>
+	 </where>
+    </sql>
+    
+    <!-- 未过期查询条件 -->    
+	 <sql id="NewParkWhiteList_Query_Terms_Use">
+	 <where>
+            <![CDATA[ and end_time>=SYSDATE() ]]>
+	 </where>
+	 </sql>
+	 
+	 <!-- 查询条件10分钟 -->   
+	 <sql id="NewParkWhiteList_Query_Terms_ten">
+	 <where>
+        end_time BETWEEN CURRENT_TIMESTAMP - INTERVAL 10 MINUTE AND CURRENT_TIMESTAMP
+	 </where>
+    </sql>
+    
+    <!-- 查询10分钟快过期列表 -->
+    <select id="delList" resultMap="NewParkWhiteListResultMap" parameterType="Object">
+        select <include refid="Query_list"/>
+        from park_white_list
+       <include refid="NewParkWhiteList_Query_Terms_ten"/>
+       
+    </select>
+    <!-- 查询未过期列表 -->
+    <select id="selUseList" resultMap="NewParkWhiteListResultMap" parameterType="Object">
+        select <include refid="Query_list"/>
+        from park_white_list
+       <include refid="NewParkWhiteList_Query_Terms_Use"/>
+    </select>
+    
+    <!-- 根据id，修改记录-->
+	<update id="updateEparking" parameterType="Object" >
+		update park_white_list
+		set
+		start_time=#{startTime},
+		end_time=#{endTime},
+		phone=#{phone}
+		where
+		id=#{id}
+	</update>
+</mapper>

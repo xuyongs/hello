@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.AppVersionInfoMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.AppVersionInfoModel" >
+        <id column="id" property="id"/>
+		<result column="type" property="type"/>
+		<result column="current_version" property="currentVersion"/>
+		<result column="lowest_version" property="lowestVersion"/>
+		<result column="api_version" property="apiVersion"/>
+		<result column="description" property="description"/>
+		<result column="download_url" property="downloadUrl"/>
+		<result column="is_force" property="isForce"/>
+		<result column="is_activate" property="isActivate"/>
+		<result column="sys_user_id" property="sysUserId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="version" property="version"/>
+		<result column="is_del" property="isDel"/>
+    </resultMap>
+
+    <!-- app_version_info 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, type, current_version, lowest_version, api_version, description, download_url, is_force, is_activate, sys_user_id, create_time, update_time, version, is_del
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="type != null" >
+				and type = #{type}
+			</if>
+			<if test="currentVersion != null" >
+				and current_version = #{currentVersion}
+			</if>
+			<if test="lowestVersion != null" >
+				and lowest_version = #{lowestVersion}
+			</if>
+			<if test="apiVersion != null" >
+				and api_version = #{apiVersion}
+			</if>
+			<if test="description != null" >
+				and description = #{description}
+			</if>
+			<if test="downloadUrl != null" >
+				and download_url = #{downloadUrl}
+			</if>
+			<if test="isForce != null" >
+				and is_force = #{isForce}
+			</if>
+			<if test="isActivate != null" >
+				and is_activate = #{isActivate}
+			</if>
+			<if test="sysUserId != null" >
+				and sys_user_id = #{sysUserId}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="updateTime != null" >
+				and update_time = #{updateTime}
+			</if>
+			<if test="version != null" >
+				and version = #{version}
+			</if>
+			<if test="isDel != null" >
+				and is_del = #{isDel}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_date >= date_format(${startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_date <= date_format(${endTime}, '%Y-%m-%d') ]]>
+            </if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into app_version_info (id, type, current_version, lowest_version, api_version, description, download_url, is_force, is_activate, sys_user_id, create_time, update_time, version, is_del)
+        values (#{id}, #{type}, #{currentVersion}, #{lowestVersion}, #{apiVersion}, #{description}, #{downloadUrl}, #{isForce}, #{isActivate}, #{sysUserId}, #{createTime}, #{updateTime}, #{version}, #{isDel})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update app_version_info
+			set
+				id=#{id}, 
+				type=#{type}, 
+				current_version=#{currentVersion}, 
+				lowest_version=#{lowestVersion}, 
+				api_version=#{apiVersion}, 
+				description=#{description}, 
+				download_url=#{downloadUrl}, 
+				is_force=#{isForce}, 
+				is_activate=#{isActivate}, 
+				sys_user_id=#{sysUserId}, 
+				create_time=#{createTime}, 
+				update_time=#{updateTime}, 
+				version=#{version}, 
+				is_del=#{isDel}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update app_version_info
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="type != null  ">
+						type=#{type},
+                    </if>
+                    <if test="currentVersion != null  ">
+						current_version=#{currentVersion},
+                    </if>
+                    <if test="lowestVersion != null  ">
+						lowest_version=#{lowestVersion},
+                    </if>
+                    <if test="apiVersion != null  ">
+						api_version=#{apiVersion},
+                    </if>
+                    <if test="description != null  ">
+						description=#{description},
+                    </if>
+                    <if test="downloadUrl != null  ">
+						download_url=#{downloadUrl},
+                    </if>
+                    <if test="isForce != null  ">
+						is_force=#{isForce},
+                    </if>
+                    <if test="isActivate != null  ">
+						is_activate=#{isActivate},
+                    </if>
+                    <if test="sysUserId != null  ">
+						sys_user_id=#{sysUserId},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                    <if test="updateTime != null  ">
+						update_time=#{updateTime},
+                    </if>
+                    <if test="version != null  ">
+						version=#{version},
+                    </if>
+                    <if test="isDel != null  ">
+						is_del=#{isDel},
+                    </if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from app_version_info
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from app_version_info
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from app_version_info
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from app_version_info
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+</mapper>

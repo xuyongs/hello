@@ -1,0 +1,779 @@
+package com.agent.czb.core.park.service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.agent.czb.common.json.JSONUtils;
+import com.agent.czb.common.park.call.CallRemoteDllUtils;
+import com.agent.czb.common.rest.service.BasisService;
+import com.agent.czb.common.utils.DateUtils;
+import com.agent.czb.common.utils.FrameUtils;
+import com.agent.czb.common.utils.TimeCompareUtils;
+import com.agent.czb.core.eparking.FnEventCallback;
+import com.agent.czb.core.park.enums.ParkOrderEnum;
+import com.agent.czb.core.park.enums.ParkWhiteEnum;
+import com.agent.czb.core.park.mapper.ParkWhiteListMapper;
+import com.agent.czb.core.park.model.ParkCarStateModel;
+import com.agent.czb.core.park.model.ParkOrderInfoModel;
+import com.agent.czb.core.park.model.ParkSysInfoModel;
+import com.agent.czb.core.park.model.ParkWhiteListModel;
+import com.agent.czb.core.sys.enums.CarportInfoEnums;
+import com.agent.czb.core.sys.model.CarportBuyLogModel;
+import com.agent.czb.core.sys.model.CarportInfoModel;
+import com.agent.czb.core.sys.model.PayOrderLogModel;
+import com.agent.czb.core.sys.model.UserInfoModel;
+import com.agent.czb.core.sys.service.CarportBuyLogService;
+import com.agent.czb.core.sys.service.CarportInfoService;
+import com.agent.czb.core.sys.service.PayOrderLogService;
+import com.agent.czb.core.sys.service.UserInfoService;
+import com.agent.czb.core.sys.service.UserPlateInfoService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.eparking.api.WTY_EX;
+import com.eparking.test.CarInto;
+
+/**
+ * 停车场白名单表服务层
+ */
+@Service("parkWhiteListService")
+public class ParkWhiteListService extends BasisService<ParkWhiteListMapper, ParkWhiteListModel> {
+    private static Logger log = LoggerFactory.getLogger(ParkWhiteListService.class);
+    @Autowired
+    public UserPlateInfoService userPlateInfoService;
+    @Autowired
+    private UserInfoService userInfoService;
+    @Autowired
+    private CarportInfoService carportInfoService;
+    @Autowired
+    private ParkOrderInfoService parkOrderInfoService;
+    @Autowired
+	private ParkCarStateService parkCarStateService;
+	@Autowired
+	private ParkGateLogService parkGateLogService;
+	@Autowired
+	private PayOrderLogService payOrderLogService;
+	@Autowired
+	private CarportBuyLogService carportBuyLogService;
+	@Autowired
+	private ParkSysInfoService parkSysInfoService;
+
+    public int updateBySelective(List<ParkWhiteListModel> list, String state) {
+        int count = 0;
+        for (ParkWhiteListModel info : list) {
+            info.setUpdateTime(new Date());
+            info.setState(state);
+            updateBySelective(info);
+            count++;
+        }
+        return count;
+    }
+
+    public UserInfoModel checkWhiteListUser(String phone, String plateNum) {
+        if (StringUtils.isEmpty(phone) || StringUtils.isEmpty(plateNum)) {
+            return null;
+        }
+        UserInfoModel userInfo = userInfoService.selectUserByPhone(phone);
+        if (userInfo == null) {
+            return null;
+        }
+        long count = userPlateInfoService.pageCount(FrameUtils.newMap("userId", userInfo.getId().toString(), "plateNum", plateNum));
+        if (count > 0) {
+            return userInfo;
+        }
+        log.info("not banding plateNum, phone {}, plateNum {}", phone, plateNum);
+        return null;
+    }
+
+    public ParkWhiteListModel findByCarportId(Long carportId) {
+        if (carportId == null) {
+            return null;
+        }
+        Map<String, String> params = new HashMap<>();
+        params.put("carportId", carportId.toString());
+        List<ParkWhiteListModel> list = pageList(params);
+        if (list.size() > 0) {
+            return list.get(0);
+        }
+        return null;
+    }
+
+    public void updateExpTime(Long carportId) {
+        ParkWhiteListModel parkWhiteList = findByCarportId(carportId);
+        if (parkWhiteList != null) {
+            parkWhiteList.setIsExp(0);
+            parkWhiteList.setExpTime(null);
+            parkWhiteList.setCarportId(null);
+            parkWhiteList.setUpdateTime(new Date());
+            update(parkWhiteList);
+        }
+    }
+
+    /**
+     * 查找白名单
+     */
+    public ParkWhiteListModel findBySateAndCode(String state, String parkCode, String code,Long id) {
+        Map<String, String> params = new HashMap<>();
+        params.put("state", state);
+        params.put("parkCode", parkCode);
+        params.put("code", code);
+        params.put("id",id.toString());
+//        params.put("code", code);
+        List<ParkWhiteListModel> list = pageList(params);
+        if (list.size() > 0) {
+            return list.get(0);
+        }
+        return null;
+    }
+
+    /**
+     * 检验白名单
+     */
+    public void checkPlateNums(String parkCode, String[] carCodes) {
+        if (carCodes == null || carCodes.length == 0) {
+            return;
+        }
+        List<ParkWhiteListModel> dels = new ArrayList<>();
+        List<ParkWhiteListModel> adds = new ArrayList<>();
+        List<ParkWhiteListModel> list = pageList(FrameUtils.newMap("parkCode", parkCode));
+        Set<String> set = new HashSet<>(Arrays.asList(carCodes));
+        // 循环系统白名单
+        for (ParkWhiteListModel parkWhiteList : list) {
+            String plateNum = parkWhiteList.getPlateNum();
+            String state = parkWhiteList.getState();
+            // 校验系统白名单是否在停车场中
+            if (set.contains(plateNum)) {
+                if (state.equals(ParkWhiteEnum.State.车位.toValue())) {
+                    dels.add(parkWhiteList);
+                }
+            } else {
+                if (state.equals(ParkWhiteEnum.State.共享.toValue())) {
+                    adds.add(parkWhiteList);
+                }
+            }
+        }
+    }
+
+    /**
+     * 保存白名单
+     */
+    public void saveWhiteList(ParkOrderInfoModel t, Long userId) {
+        if (!t.getType().equals(ParkOrderEnum.Type.BUY_CARPORT.toValue())) {
+            return;
+        }
+        //userID 买家ID
+        ParkWhiteListModel parkWhiteList = new ParkWhiteListModel();
+        parkWhiteList.setUserId(userId);
+        parkWhiteList.setState(ParkWhiteEnum.State.共享.toValue());
+        parkWhiteList.setParkCode(t.getParkCode());
+        parkWhiteList.setPlateNum(t.getPlateNum());
+        parkWhiteList.setCode(t.getCode());
+        parkWhiteList.setOpenTime(t.getOpenTime());
+        parkWhiteList.setStartTime(t.getStartTime());
+        parkWhiteList.setModel(t.getModel());
+        parkWhiteList.setEndTime(t.getEndTime());
+        parkWhiteList.setRemark(t.getRemark());
+        parkWhiteList.setCreateTime(new Date());
+        parkWhiteList.setUpdateTime(new Date());
+        parkWhiteList.setAddr(carportInfoService.selectById(t.getRefId()).getAddr());
+        parkWhiteList.setWhiteplatenum( mapper.selectByCarportid(parkOrderInfoService.selectById(t.getId()).getRefId()).getPlateNum());
+        saveWhiteList(parkWhiteList,t.getPublishType(),t.getEndTime());
+
+      //车主(添加卖家的开放时间和买家的时间相反)
+        List<ParkWhiteListModel> list = pageList(FrameUtils.newMap( "carportId",t.getRefId().toString()));
+        if(list.size()>0){
+            ParkWhiteListModel parkWhiteListModel1 =  list.get(0);
+            parkWhiteListModel1.setRemark(parkWhiteList.getRemark());
+            if (parkWhiteList.getRemark()==null||parkWhiteList.getRemark().equals("")) {
+				//短租
+            	SimpleDateFormat  sdFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            	parkWhiteListModel1.setOpenTime(sdFormat.format(parkWhiteList.getEndTime()));
+			}else{
+				//长租
+				    String opentiemStart = parkWhiteList.getOpenTime().split("-")[0];
+		            String opentiemEnd = parkWhiteList.getOpenTime().split("-")[1];
+		            parkWhiteListModel1.setOpenTime(opentiemEnd +"-"+opentiemStart);
+			}
+            update(parkWhiteListModel1);
+        }
+
+    }
+    /**
+     * 保存白名单
+     */
+    public void saveWhiteList(ParkWhiteListModel parkWhiteList,Integer publishType,Date endTime) {
+        insert(parkWhiteList);
+        // 修改车主白名单
+        Map<String, String> params = new HashMap<>();
+        params.put("code", parkWhiteList.getCode());
+        params.put("parkCode", parkWhiteList.getParkCode());
+        params.put("state", ParkWhiteEnum.State.车位.toValue());
+        List<ParkWhiteListModel> list = pageList(params);
+        if (list.size() > 0) {
+            ParkWhiteListModel model = list.get(0);
+            Map<String, Object> map = JSONUtils.jsonToMap(parkWhiteList.getRemark());
+            try {
+                if (publishType==1){
+                    model.setExpTime(endTime);
+                }else{
+                    model.setExpTime(DateUtils.F_YMD_.parse(map.get("enddate").toString()));
+                }
+                model.setUpdateTime(new Date());
+                update(model);
+            } catch (ParseException e) {
+                throw new RuntimeException("parse end date error!", e);
+            }
+        }
+        if (parkWhiteList.getState().equals(ParkWhiteEnum.State.共享.toValue())) {
+            String openTime = parkWhiteList.getOpenTime();
+            if (openTime == null) {
+                openTime = "";
+            }
+            // 发送给 停车场系统
+            CallRemoteDllUtils.addWhiteList(
+                    parkWhiteList.getParkCode(),
+                    parkWhiteList.getPlateNum(),
+                    parkWhiteList.getWhiteplatenum(),
+                    parkWhiteList.getCode(),
+                    openTime.split("-")[0],
+                    openTime.split("-")[1],
+                    parkWhiteList.getRemark());
+        }
+    }
+
+    public void updateWhiteListExp() {
+        mapper.updateWhiteListExp();
+    }
+
+	public ParkWhiteListModel selectByCarportId(Long carportId) {
+		// TODO Auto-generated method stub
+		return mapper.selectByCarportid(carportId);
+	}
+
+	public List<ParkWhiteListModel> selectByUserId(Long userId) {
+		// TODO Auto-generated method stub
+		return mapper.selectByUserId(userId);
+	}
+
+	public ParkWhiteListModel selectByParkCodeAndPlateNum(ParkWhiteListModel parkWhiteList) {
+		// TODO Auto-generated method stub
+		return mapper.selectByParkCodeAndPlateNum(parkWhiteList);
+	}
+	public List<ParkWhiteListModel> selectByEndtime(){
+		return mapper.selectByEndtime();
+	}
+	
+	// 定时修改云端的车辆信息
+			public void updateEpWhite() {
+				List<ParkWhiteListModel> selectByEndtime = mapper.selectByEndtime();
+				for (ParkWhiteListModel parkWhiteListModel : selectByEndtime) {
+					if (parkWhiteListModel.getUserId()==null) {
+						continue;
+					}
+					//System.out.println(parkWhiteListModel);
+					// 判断为共享车主
+					if (parkWhiteListModel.getState().equals("1")) {
+						// 判断为长租车辆
+					if (parkWhiteListModel.getRemark() != null) {
+						String string = parkWhiteListModel.getRemark();
+						JSONObject jsonObject = JSONObject.parseObject(string);
+						String startdate = jsonObject.getString("startdate");
+						String enddate = jsonObject.getString("enddate");
+						String cycle = jsonObject.getString("cycle");
+						String des = jsonObject.getString("des");
+						// 截取opentime时间
+						String openTime = parkWhiteListModel.getOpenTime();
+						String[] split = openTime.split("-");
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+						Date d = new Date();
+						String dateNowStr = sdf.format(d);
+						SimpleDateFormat sdfhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						String startTime = dateNowStr + " " + split[0] + ":00";
+						String endTime = dateNowStr + " " + split[1] + ":00";
+						Date opentimeStart = null;
+						Date opentimeEnd = null;
+						try {
+							opentimeStart = sdfhms.parse(startTime);
+							opentimeEnd = sdfhms.parse(endTime);
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+						// 判断当前是周几
+						String[] weekDays = { "周日", "周一", "周二", "周三", "周四", "周五", "周六" };
+						Calendar calendar = Calendar.getInstance();
+						String wek = weekDays[calendar.get(Calendar.DAY_OF_WEEK) - 1];
+						// 全日
+						if (cycle.equals("0")) {
+							updateEpBytime(parkWhiteListModel, opentimeStart, opentimeEnd);
+						} else if (cycle.equals("2")) {// 周六、周日
+							String[] splitWeek = des.split("、");
+							if (wek.equals(splitWeek[0]) || wek.equals(splitWeek[1])) {
+								updateEpBytime(parkWhiteListModel, opentimeStart, opentimeEnd);
+							}
+						} else {// 周一至周五
+							if (!wek.equals("周六") || !wek.equals("周日")) {
+								updateEpBytime(parkWhiteListModel, opentimeStart, opentimeEnd);
+							}
+						}
+					}
+					// 为短租车
+					else {
+						updateEpBytime(parkWhiteListModel, parkWhiteListModel.getStartTime(),
+								parkWhiteListModel.getEndTime());
+					}
+				}
+
+				// 车主(车主分享的车位被人购买了才会出现超时的情况)
+				if (parkWhiteListModel.getState().equals("0") && parkWhiteListModel.getCarportId() != null) {
+					//长租
+					if (parkWhiteListModel.getRemark() != null) {
+						String string = parkWhiteListModel.getRemark();
+						JSONObject jsonObject = JSONObject.parseObject(string);
+						String startdate = jsonObject.getString("startdate");
+						String enddate = jsonObject.getString("enddate");
+						String cycle = jsonObject.getString("cycle");
+						String des = jsonObject.getString("des");
+						// 截取opentime时间
+						String openTime = parkWhiteListModel.getOpenTime();
+						String[] split = openTime.split("-");
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+						Date d = new Date();
+						String dateNowStr = sdf.format(d);
+						SimpleDateFormat sdfhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						String startTime = dateNowStr + " " + split[0] + ":00";
+						String endTime = dateNowStr + " " + split[1] + ":00";
+						Date opentimeStart = null;
+						Date opentimeEnd = null;
+						try {
+							opentimeStart = sdfhms.parse(startTime);
+							opentimeEnd = sdfhms.parse(endTime);
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+						// 判断当前是周几
+						String[] weekDays = { "周日", "周一", "周二", "周三", "周四", "周五", "周六" };
+						Calendar calendar = Calendar.getInstance();
+						String wek = weekDays[calendar.get(Calendar.DAY_OF_WEEK) - 1];
+						// 全日
+						if (cycle.equals("0")) {
+							updateEpBytime(parkWhiteListModel, opentimeStart, opentimeEnd);
+						} else if (cycle.equals("2")) {// 周六、周日
+							String[] splitWeek = des.split("、");
+							if (wek.equals(splitWeek[0]) || wek.equals(splitWeek[1])) {
+								updateEpBytime(parkWhiteListModel, opentimeStart, opentimeEnd);
+							}else{
+								updateEp(parkWhiteListModel, "月租车", parkWhiteListModel.getStartTime(), parkWhiteListModel.getEndTime());
+							}
+						} else {// 周一至周五
+							if (!wek.equals("周六") || !wek.equals("周日")) {
+								updateEpBytime(parkWhiteListModel, opentimeStart, opentimeEnd);
+							}else{
+								updateEp(parkWhiteListModel, "月租车", parkWhiteListModel.getStartTime(), parkWhiteListModel.getEndTime());
+							}
+						}
+					}
+					// 为短租车
+					else {
+						updateEpBytime(parkWhiteListModel, parkWhiteListModel.getStartTime(),parkWhiteListModel.getEndTime());
+					} 
+				}
+				//车主未分享
+				if (parkWhiteListModel.getState().equals("0") && parkWhiteListModel.getCarportId()==null) {
+					updateEpBytime(parkWhiteListModel, parkWhiteListModel.getStartTime(), parkWhiteListModel.getEndTime());
+				}
+			}
+		}
+
+		// 判断是否需要将车辆数据修改
+		public void updateEpBytime(ParkWhiteListModel parkWhiteListModel, Date opentimeStart, Date opentimeEnd) {
+			ParkSysInfoModel parkSysInfoModel = parkSysInfoService.selectByParkCode(parkWhiteListModel.getParkCode());
+			// 修改为月租车
+			if (timeMinute(opentimeStart,new Date()) <= 5 && timeMinute(opentimeStart,new Date()) >= 0) {
+				// 判断需要生成超时订单
+				ParkCarStateModel parkCarState = new ParkCarStateModel();
+				parkCarState.setParkCode(parkWhiteListModel.getParkCode());
+				parkCarState.setPlateNum(parkWhiteListModel.getPlateNum());
+				ParkCarStateModel parkCarStateModel = parkCarStateService.selectByPlateNumAndParkCode(parkCarState);
+				if (parkCarStateModel != null) {
+					// 进场但未支付
+					if (parkCarStateModel.getState().equals("1")) {
+						Long totalPrice = null;
+						Date inTime = parkCarStateModel.getInDate();
+						Long time = timeMinute(opentimeStart, inTime);
+						Long times = (time % 60 >1) ? ((time / 60) + 1) : ((time / 60));
+						Integer signPrice = Integer.valueOf(parkSysInfoModel.getPriceDes());
+						Long maxAmount = parkSysInfoModel.getMaxAmount();
+						Long allPrice = (long) Math.floor(signPrice * times);
+						totalPrice = (allPrice > maxAmount) ? maxAmount : allPrice;
+						if (totalPrice>0) {
+							insertParkOrderInfo(parkWhiteListModel, totalPrice,inTime);
+						}
+					}
+					// 进场已支付
+					if (parkCarStateModel.getState().equals("3")) {
+						Long totalPrice = null;
+						// 支付时间
+						Date advanceTime = null;
+						List<ParkOrderInfoModel> parkOrderInfoModelList = parkOrderInfoService
+								.selectByRefId(parkCarStateModel.getInLogId());
+						for (ParkOrderInfoModel parkOrderInfoModel : parkOrderInfoModelList) {
+							if (parkOrderInfoModel.getState().equals(ParkOrderEnum.State.ADVANCE__PAID.toValue())) {
+								
+								List<PayOrderLogModel> payOrderLogModelList = payOrderLogService
+										.selectByRefId(parkOrderInfoModel.getId());
+								for (PayOrderLogModel payOrderLogModel : payOrderLogModelList) {
+									if (payOrderLogModel.getRefType().equals("2")) {
+										advanceTime= payOrderLogModel.getCreateTime();
+									}
+								}
+								Long time = timeMinute(opentimeStart, advanceTime);
+								//超时时长按小时计算超过一分钟也按照一小时计算
+								Long times = (time % 60 >1) ? ((time / 60) + 1) : ((time / 60));
+								Integer signPrice = Integer.valueOf(parkSysInfoModel.getPriceDes());
+								Long maxAmount = parkSysInfoModel.getMaxAmount();
+								Long allPrice = (long) Math.floor(signPrice * times);
+								totalPrice = (allPrice > maxAmount) ? maxAmount : allPrice;
+							}
+						}
+						if (totalPrice>0) {
+							insertParkOrderInfo(parkWhiteListModel, totalPrice,advanceTime);
+						}
+					}
+				}
+
+				updateEp(parkWhiteListModel, "月租车", opentimeStart, opentimeEnd);
+			}
+			// 修改为临时车，删除停车场车辆
+			if (timeMinute(new Date(),opentimeEnd) <= 5 && timeMinute(new Date(),opentimeEnd) >= 0) {
+				deleteMonthCarEp(parkWhiteListModel, "临时车", opentimeStart, opentimeEnd);
+			}
+		}
+
+		// 时间相差分钟数
+		public Long timeMinute(Date first, Date end) {
+			Long timeTM = first.getTime() - end.getTime();
+			return timeTM / (1000 * 60);
+		}
+
+		// 生成超时订单
+		public void insertParkOrderInfo(ParkWhiteListModel parkWhiteList, Long totalPrice, Date payTime) {
+			log.info("车辆超时，生成订单：{}",parkWhiteList);
+			//获取车辆状态信息
+			ParkCarStateModel parkCarStateModel = new ParkCarStateModel();
+			parkCarStateModel.setParkCode(parkWhiteList.getParkCode());
+			parkCarStateModel.setPlateNum(parkWhiteList.getPlateNum());
+			ParkCarStateModel parkCarState = parkCarStateService.selectByPlateNumAndParkCode(parkCarStateModel);
+			//生成订单
+			ParkOrderInfoModel parkOrderInfoModel = new ParkOrderInfoModel();
+            parkOrderInfoModel.setUserId(parkWhiteList.getUserId());
+            parkOrderInfoModel.setUserName(null);
+            parkOrderInfoModel.setParkCode(parkCarState.getParkCode());
+            parkOrderInfoModel.setPlateNum(parkCarState.getPlateNum());
+            parkOrderInfoModel.setModel("5");
+            // 从云端获取，设置价格
+            parkOrderInfoModel.setTotalPrice(totalPrice*100);
+            parkOrderInfoModel.setRefId(parkCarState.getInLogId());
+            parkOrderInfoModel.setType(ParkOrderEnum.Type.APP_PAY.toValue());
+            parkOrderInfoModel.setState(ParkOrderEnum.State.OVERTIME_UNPAID.toValue());
+            if (parkWhiteList.getCode()!=null||parkWhiteList.getCode()!="") {
+                parkOrderInfoModel.setCode(parkWhiteList.getCode());
+			}
+            if (parkWhiteList.getRemark()!=null&&parkWhiteList.getRemark()!="") {
+				parkOrderInfoModel.setRemark(parkWhiteList.getRemark());
+			}
+            parkOrderInfoModel.setCreateTime(new Date());
+            if (parkWhiteList.getOpenTime()!=null&&parkWhiteList.getOpenTime()!="") {
+                parkOrderInfoModel.setOpenTime(parkWhiteList.getOpenTime());
+			}
+            parkOrderInfoModel.setUpdateTime(new Date());
+            parkOrderInfoModel.setStartTime(payTime);
+            parkOrderInfoModel.setEndTime(new Date());
+			
+			parkOrderInfoService.insert(parkOrderInfoModel);
+		}
+		/**
+		 * 调用修改内部车函数
+		 * 
+		 * @param parkWhiteListModel
+		 */
+		public void updateEp(ParkWhiteListModel parkWhiteListModel, String carType, Date opentimeStart, Date opentimeEnd) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			UserInfoModel userinfo = userInfoService.selectById(parkWhiteListModel.getUserId());
+			ParkCarStateModel parkCarState = new ParkCarStateModel();
+			parkCarState.setParkCode(parkWhiteListModel.getParkCode());
+			parkCarState.setPlateNum(parkWhiteListModel.getPlateNum());
+			ParkCarStateModel parkCarStateModel = parkCarStateService.selectByPlateNumAndParkCode(parkCarState);
+			String isIO="场外";
+			if (parkCarStateModel!=null) {
+				if (!parkCarStateModel.getState().equals("2")) {
+					isIO="场内";
+				}
+			}
+			Map<String, String> map = new HashMap<>();
+			map.put("park_id", parkWhiteListModel.getParkCode());
+			map.put("plate_id", parkWhiteListModel.getPlateNum());// 非空
+			map.put("isinout", isIO);
+			map.put("plate_color", "");
+			map.put("plate_type", carType);// 非空
+			map.put("plate_state", "正常");// 非空
+			map.put("plate_subtype", "");
+			map.put("free_time", "60");// 非空
+			map.put("begin_date", sdf.format(opentimeStart));// 非空
+			map.put("end_date", sdf.format(opentimeEnd));// 非空
+			map.put("carown_name", "");
+			map.put("carown_sex", "");
+			map.put("carown_phone", userinfo.getPhone());// 非空 车主电话号码
+			map.put("carown_address", "");
+			map.put("charg_scheme", "");
+			map.put("del_record", "0");
+			int addMonthCar = CarInto.addMonthCar(map);
+			if (addMonthCar!=1) {
+				parkWhiteListModel.setCreateTime(new Date());
+				parkWhiteListModel.setUpdateTime(new Date());
+				parkWhiteListModel.setComment("0");
+				mapper.insertToTmp(parkWhiteListModel);
+			}
+		}
+		//删除内部车
+		public static void deleteMonthCarEp(ParkWhiteListModel parkWhiteListModel, String carType, Date opentimeStart, Date opentimeEnd){
+			Map<String, String> mapdel = new HashMap<>();
+			mapdel.put("park_id",parkWhiteListModel.getParkCode());   //停车场ID
+			mapdel.put("plate_id", parkWhiteListModel.getPlateNum()); // 车牌号码
+			CarInto.deleteMonthCar(mapdel);
+			log.info("月租车变更成功:{}",parkWhiteListModel);
+		}
+	
+		/**
+		 * 查询超时的车辆（每隔十分钟查一次）
+		 * @param state
+		 * @return
+		 * @throws ParseException 
+		 */
+		public List<Map<String,String>>  selectByState() throws Exception {
+			String openStartTime;
+			String openEndTime;
+			Map map=new HashMap<String,String>();
+			List overTimeList =new ArrayList<>();
+			//取状态为共享车主的信息
+			List<ParkWhiteListModel> selectByStateList = mapper.selectByState(ParkWhiteEnum.State.共享.toValue());
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd ");
+			Calendar nowTime = Calendar.getInstance();
+			//获取当前时间
+			Date endTime=nowTime.getTime();
+			nowTime.add(Calendar.MINUTE, -10);
+			//获取当前时间的前十分钟
+			Date startTime=nowTime.getTime();
+			if(!selectByStateList.equals(null)){
+				 for (ParkWhiteListModel parkWhiteList : selectByStateList) {
+						UserInfoModel selectUserIdByPhone = userInfoService.selectUserIdByPhone(parkWhiteList.getUserId());
+						if(parkWhiteList.getRemark()==null || parkWhiteList.getRemark().equals("")){
+							//短租车位
+							boolean effectiveDate = TimeCompareUtils.isEffectiveDate(parkWhiteList.getEndTime(), startTime, endTime);
+							//判断是否在这个时间段当前时间，当前时间-10分钟
+							if(effectiveDate == true){
+								String add=parkWhiteList.getAddr();
+								map.put("phone", selectUserIdByPhone.getPhone());
+								map.put("add", add);
+								overTimeList.add(map);
+							}
+						}else{//当车位是长租车位时
+				        	JSONObject jsonStr = JSON.parseObject(parkWhiteList.getRemark());
+				        	String[] str = parkWhiteList.getOpenTime().split("-");
+				        	//开始时间
+				        	if(str[0].substring(2, 3).equals(":")){
+				        		 openStartTime=jsonStr.get("startdate").toString()+" "+str[0];
+				        	}else{
+				        		 openStartTime=jsonStr.get("startdate").toString()+" 0"+str[0];
+				        	}
+				        	//结束时间
+				        	if(str[1].substring(2, 3).equals(":")){
+				        		 openEndTime=jsonStr.get("enddate").toString()+" "+str[1];
+				        	}else{
+				        		 openEndTime=jsonStr.get("enddate").toString()+" 0"+str[1];
+				        	}
+				        	//取当前时间+str[1],判断这个时间是不是在这个区间内
+				        	Date zoneTime =sdf.parse(sdf1.format(endTime)+str[1]);
+							//判断当前区域时间是不是在长租车是的时间范围内
+				        	boolean longEffective = TimeCompareUtils.isEffectiveDate(zoneTime, sdf.parse(openStartTime), sdf.parse(openEndTime));
+				        	if(longEffective == true){
+				        		//判断当期那时间是不是在当前时间和当前前十分钟内
+				        		boolean effective = TimeCompareUtils.isEffectiveDate(zoneTime, startTime, endTime);
+				        		if(effective == true){
+				        			String add=parkWhiteList.getAddr();
+									map.put("phone", selectUserIdByPhone.getPhone());
+									map.put("add", add);
+									overTimeList.add(map);
+				        		}
+				        	}
+						}
+						
+					}
+			}
+			
+			return overTimeList;
+		}
+		/**
+		 * 提前15分钟的数据
+		 * @return
+		 * @throws ParseException
+		 */
+		public List<Map<String,String>>  selectByAdvance() throws Exception {
+			String openStartTime;
+			String openEndTime;
+			List advanceTimeList =new ArrayList<>();
+			//取状态为共享车主的信息
+			List<ParkWhiteListModel> selectByStateList = mapper.selectByAdvance(ParkWhiteEnum.State.共享.toValue());
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd ");
+			Calendar nowTime = Calendar.getInstance();
+			//获取当前时间
+			Date endTime=nowTime.getTime();
+			nowTime.add(Calendar.MINUTE, +15);
+			//获取当前时间的之后15分钟的时间
+			Date startTime=nowTime.getTime();
+			if(!selectByStateList.equals(null)){
+				 for (ParkWhiteListModel parkWhiteList : selectByStateList) {
+						UserInfoModel selectUserIdByPhone = userInfoService.selectUserIdByPhone(parkWhiteList.getUserId());
+						if(parkWhiteList.getRemark()==null || parkWhiteList.getRemark().equals("")){
+							//短租车位
+							boolean effectiveDate = TimeCompareUtils.isEffectiveDate(sdf.parse(parkWhiteList.getOpenTime()),endTime,startTime);
+							//判断是否在这个时间段当前时间，当前时间+15分钟
+							if(effectiveDate == true){
+								Map map=new HashMap<String,String>();
+								String add=parkWhiteList.getAddr();
+								map.put("phone", selectUserIdByPhone.getPhone());
+								map.put("add", add);
+								advanceTimeList.add(map);
+							}
+						}else{//当车位是长租车位时
+				        	JSONObject jsonStr = JSON.parseObject(parkWhiteList.getRemark());
+				        	String[] str = parkWhiteList.getOpenTime().split("-");
+				        	//开始时间
+				        	if(str[0].substring(2, 3).equals(":")){
+				        		 openStartTime=jsonStr.get("startdate").toString()+" "+str[0];
+				        	}else{
+				        		 openStartTime=jsonStr.get("startdate").toString()+" 0"+str[0];
+				        	}
+				        	//结束时间
+				        	if(str[1].substring(2, 3).equals(":")){
+				        		 openEndTime=jsonStr.get("enddate").toString()+" "+str[1];
+				        	}else{
+				        		 openEndTime=jsonStr.get("enddate").toString()+" 0"+str[1];
+				        	}
+				        	//取当前时间+str[1],判断这个时间是不是在这个区间内
+				        	Date zoneTime =sdf.parse(sdf1.format(endTime)+str[0]);
+							//判断当前区域时间是不是在长租车是的时间范围内
+				        	boolean longEffective = TimeCompareUtils.isEffectiveDate(zoneTime, sdf.parse(openStartTime), sdf.parse(openEndTime));
+				        	if(longEffective == true){
+				        		//判断当期那时间是不是在当前时间和当前之后十五分钟内
+				        		boolean effective = TimeCompareUtils.isEffectiveDate(zoneTime, endTime, startTime);
+				        		if(effective == true){
+				        			Map map=new HashMap<String,String>();
+				        			String add=parkWhiteList.getAddr();
+									map.put("phone", selectUserIdByPhone.getPhone());
+									map.put("add", add);
+									advanceTimeList.add(map);
+				        		}
+				        	}
+						}
+						
+					}
+			}
+			
+			return advanceTimeList;
+		}
+		/**
+		 * 到时15分钟的数据
+		 * @return
+		 * @throws ParseException
+		 */
+		public List<Map<String,String>>  selectByArrival() throws ParseException {
+			String openStartTime;
+			String openEndTime;
+			Map map=new HashMap<String,String>();
+			List arrivalTimeList =new ArrayList<>();
+			//取状态为共享车主的信息
+			List<ParkWhiteListModel> selectByStateList = mapper.selectByState(ParkWhiteEnum.State.共享.toValue());
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd ");
+			Calendar nowTime = Calendar.getInstance();
+			//获取当前时间
+			Date endTime=nowTime.getTime();
+			nowTime.add(Calendar.MINUTE, -15);
+			//获取当前时间的之后15分钟的时间
+			Date startTime=nowTime.getTime();
+			if(!selectByStateList.equals(null)){
+				for (ParkWhiteListModel parkWhiteList : selectByStateList) {
+					UserInfoModel selectUserIdByPhone = userInfoService.selectUserIdByPhone(parkWhiteList.getUserId());
+					if(parkWhiteList.getRemark()==null || parkWhiteList.getRemark().equals("")){
+						//短租车位
+						boolean effectiveDate = TimeCompareUtils.isEffectiveDate(parkWhiteList.getEndTime(),endTime,startTime);
+						//判断是否在这个时间段当前时间，当前时间+15分钟
+						if(effectiveDate == true){
+							String add=parkWhiteList.getAddr();
+							map.put("phone", selectUserIdByPhone.getPhone());
+							map.put("add", add);
+							arrivalTimeList.add(map);
+						}
+					}else{//当车位是长租车位时
+						JSONObject jsonStr = JSON.parseObject(parkWhiteList.getRemark());
+						String[] str = parkWhiteList.getOpenTime().split("-");
+						//开始时间
+						if(str[0].substring(2, 3).equals(":")){
+							openStartTime=jsonStr.get("startdate").toString()+" "+str[0];
+						}else{
+							openStartTime=jsonStr.get("startdate").toString()+" 0"+str[0];
+						}
+						//结束时间
+						if(str[1].substring(2, 3).equals(":")){
+							openEndTime=jsonStr.get("enddate").toString()+" "+str[1];
+						}else{
+							openEndTime=jsonStr.get("enddate").toString()+" 0"+str[1];
+						}
+						//取当前时间+str[1],判断这个时间是不是在这个区间内
+						Date zoneTime =sdf.parse(sdf1.format(endTime)+str[1]);
+						//判断当前区域时间是不是在长租车是的时间范围内
+						boolean longEffective = TimeCompareUtils.isEffectiveDate(zoneTime, sdf.parse(openStartTime), sdf.parse(openEndTime));
+						if(longEffective == true){
+							//判断当期那时间是不是在当前时间和当前之后十五分钟内
+							boolean effective = TimeCompareUtils.isEffectiveDate(zoneTime, endTime, startTime);
+							if(effective == true){
+								String add=parkWhiteList.getAddr();
+								map.put("phone", selectUserIdByPhone.getPhone());
+								map.put("add", add);
+								arrivalTimeList.add(map);
+							}
+						}
+					}
+					
+				}
+			}
+			
+			return arrivalTimeList;
+		}
+		/**
+		 * 根据车牌查询白名单
+		 * @param plateNum
+		 * @return
+		 */
+				public List<ParkWhiteListModel> seleByPlateNum(String plateNum) {
+					// TODO Auto-generated method stub
+					return mapper.selectByPlateNum(plateNum);
+				}
+}

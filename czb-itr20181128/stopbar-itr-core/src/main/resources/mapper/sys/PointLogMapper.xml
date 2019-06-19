@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.PointLogMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.PointLogModel" >
+        <id column="id" property="id"/>
+		<result column="point_id" property="pointId"/>
+		<result column="op_type" property="opType"/>
+		<result column="type" property="type"/>
+		<result column="rel_id" property="relId"/>
+		<result column="point" property="point"/>
+		<result column="user_id" property="userId"/>
+		<result column="description" property="description"/>
+		
+		<result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- point_log 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, point_id, op_type, type, rel_id, point, user_id,description, create_time
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="pointId != null" >
+				and point_id = #{pointId}
+			</if>
+			<if test="opType != null" >
+				and op_type = #{opType}
+			</if>
+			<if test="type != null" >
+				and type = #{type}
+			</if>
+			<if test="relId != null" >
+				and rel_id = #{relId}
+			</if>
+			<if test="point != null" >
+				and point = #{point}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="description != null" >
+				and description = #{description}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_date >= date_format(${startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_date <= date_format(${endTime}, '%Y-%m-%d') ]]>
+            </if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into point_log (id, point_id, op_type, type, rel_id, point, user_id,description, create_time)
+        values (#{id}, #{pointId}, #{opType}, #{type}, #{relId}, #{point}, #{userId},#{description}, #{createTime})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update point_log
+			set
+				id=#{id}, 
+				point_id=#{pointId}, 
+				op_type=#{opType}, 
+				type=#{type}, 
+				rel_id=#{relId}, 
+				point=#{point}, 
+				user_id=#{userId}, 
+				description=#{description},
+				create_time=#{createTime}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update point_log
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="pointId != null  ">
+						point_id=#{pointId},
+                    </if>
+                    <if test="opType != null  ">
+						op_type=#{opType},
+                    </if>
+                    <if test="type != null  ">
+						type=#{type},
+                    </if>
+                    <if test="relId != null  ">
+						rel_id=#{relId},
+                    </if>
+                    <if test="point != null  ">
+						point=#{point},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="description != null  ">
+						description=#{description},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from point_log
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from point_log
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from point_log
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from point_log
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+    <!-- 根据id查询 -->
+    <select id="selectByUserId"  resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" />
+        	from point_log
+			where
+				user_id=#{userId} order by create_time desc
+    </select>
+</mapper>

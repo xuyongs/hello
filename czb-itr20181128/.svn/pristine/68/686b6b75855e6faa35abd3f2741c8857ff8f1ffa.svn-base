@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="stopbar-itr-web:war">
+    <output-path>$PROJECT_DIR$/stopbar-itr-web/target</output-path>
+    <root id="archive" name="stopbar-itr-web.war">
+      <element id="artifact" artifact-name="stopbar-itr-web:war exploded" />
+    </root>
+  </artifact>
+</component>

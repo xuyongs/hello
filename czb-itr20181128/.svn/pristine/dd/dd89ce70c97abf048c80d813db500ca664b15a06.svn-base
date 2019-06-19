@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.FileUpdateInfoMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.FileUpdateInfoModel" >
+        <id column="id" property="id"/>
+		<result column="user_id" property="userId"/>
+		<result column="file_type" property="fileType"/>
+		<result column="file_name" property="fileName"/>
+		<result column="file_url" property="fileUrl"/>
+		<result column="file_rvtype" property="fileRvtype"/>
+		<result column="file_rvid" property="fileRvid"/>
+		<result column="file_rank" property="fileRank"/>
+		<result column="state" property="state"/>
+		<result column="create_date" property="createDate"/>
+		<result column="note" property="note"/>
+    </resultMap>
+
+    <!-- file_update_info 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, user_id, file_type, file_name, file_url, file_rvtype, file_rvid, file_rank, state, create_date, note
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="fileType != null" >
+				and file_type = #{fileType}
+			</if>
+			<if test="fileName != null" >
+				and file_name = #{fileName}
+			</if>
+			<if test="fileUrl != null" >
+				and file_url = #{fileUrl}
+			</if>
+			<if test="fileRvtype != null" >
+				and file_rvtype = #{fileRvtype}
+			</if>
+			<if test="fileRvid != null" >
+				and file_rvid = #{fileRvid}
+			</if>
+			<if test="fileRank != null" >
+				and file_rank = #{fileRank}
+			</if>
+			<if test="state != null" >
+				and state = #{state}
+			</if>
+			<if test="createDate != null" >
+				and create_date = #{createDate}
+			</if>
+			<if test="note != null" >
+				and note = #{note}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_date >= date_format(${startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_date <= date_format(${endTime}, '%Y-%m-%d') ]]>
+            </if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into file_update_info (id, user_id, file_type, file_name, file_url, file_rvtype, file_rvid, file_rank, state, create_date, note)
+        values (#{id}, #{userId}, #{fileType}, #{fileName}, #{fileUrl}, #{fileRvtype}, #{fileRvid}, #{fileRank}, #{state}, #{createDate}, #{note})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update file_update_info
+			set
+				id=#{id}, 
+				user_id=#{userId}, 
+				file_type=#{fileType}, 
+				file_name=#{fileName}, 
+				file_url=#{fileUrl}, 
+				file_rvtype=#{fileRvtype}, 
+				file_rvid=#{fileRvid}, 
+				file_rank=#{fileRank}, 
+				state=#{state}, 
+				create_date=#{createDate}, 
+				note=#{note}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update file_update_info
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="fileType != null  ">
+						file_type=#{fileType},
+                    </if>
+                    <if test="fileName != null  ">
+						file_name=#{fileName},
+                    </if>
+                    <if test="fileUrl != null  ">
+						file_url=#{fileUrl},
+                    </if>
+                    <if test="fileRvtype != null  ">
+						file_rvtype=#{fileRvtype},
+                    </if>
+                    <if test="fileRvid != null  ">
+						file_rvid=#{fileRvid},
+                    </if>
+                    <if test="fileRank != null  ">
+						file_rank=#{fileRank},
+                    </if>
+                    <if test="state != null  ">
+						state=#{state},
+                    </if>
+                    <if test="createDate != null  ">
+						create_date=#{createDate},
+                    </if>
+                    <if test="note != null  ">
+						note=#{note},
+                    </if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from file_update_info
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from file_update_info
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from file_update_info
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from file_update_info
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+</mapper>

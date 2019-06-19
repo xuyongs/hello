@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.park.mapper.ParkGateLogMapper" >
+	<!-- Result Map-->
+	<resultMap id="BaseResultMap" type="com.agent.czb.core.park.model.ParkGateLogModel" >
+		<id column="id" property="id"/>
+		<result column="user_id" property="userId"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="gate_code" property="gateCode"/>
+		<result column="car_no" property="carNo"/>
+		<result column="plate_num" property="plateNum"/>
+		<result column="io_state" property="ioState"/>
+		<result column="io_date" property="ioDate"/>
+		<result column="in_date" property="inDate"/>
+		<result column="out_date" property="outDate"/>
+		<result column="car_type" property="carType"/>
+		<result column="pay_type" property="payType"/>
+		<result column="total_space" property="totalSpace"/>
+		<result column="remain_space" property="remainSpace"/>
+		<result column="price" property="price"/>
+		<result column="order_id" property="orderId"/>
+		<result column="detailed" property="detailed"/>
+		<result column="picture" property="picture"/>
+		<result column="is_vip" property="isVip"/>
+		<result column="create_time" property="createTime"/>
+		<result column="is_del" property="isDel"/>
+	</resultMap>
+
+	<!-- park_gate_log 表的所有字段 -->
+	<sql id="Base_Column_List" >
+		id, user_id, park_code, gate_code, car_no, plate_num, io_state, io_date, in_date, out_date, car_type, pay_type, total_space, remain_space, price, order_id, detailed, picture, is_vip, create_time,is_del
+	</sql>
+
+	<!-- 查询条件 -->
+	<sql id="Base_Where_Clause">
+		<where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="parkCode != null and parkCode != ''" >
+				and park_code LIKE CONCAT(CONCAT('%', #{parkCode}), '%')
+			</if>
+			<if test="gateCode != null" >
+				and gate_code = #{gateCode}
+			</if>
+			<if test="carNo != null" >
+				and car_no = #{carNo}
+			</if>
+			<if test="plateNum != null and plateNum != ''" >
+				and plate_num = #{plateNum}
+			</if>
+			<if test="ioState != null" >
+				and io_state = #{ioState}
+			</if>
+			<if test="ioDate != null" >
+				and io_date = #{ioDate}
+			</if>
+			<if test="inDate != null" >
+				and in_date = #{inDate}
+			</if>
+			<if test="outDate != null" >
+				and out_date = #{outDate}
+			</if>
+			<if test="carType != null and carType != ''" >
+				and car_type = #{carType}
+			</if>
+			<if test="payType != null and payType != ''" >
+				and pay_type = #{payType}
+			</if>
+			<if test="totalSpace != null" >
+				and total_space = #{totalSpace}
+			</if>
+			<if test="remainSpace != null" >
+				and remain_space = #{remainSpace}
+			</if>
+			<if test="price != null" >
+				and price = #{price}
+			</if>
+			<if test="orderId != null" >
+				and order_id = #{orderId}
+			</if>
+			<if test="detailed != null" >
+				and detailed = #{detailed}
+			</if>
+			<if test="picture != null" >
+				and picture = #{picture}
+			</if>
+			<if test="isVip != null and isVip != ''" >
+				and is_vip = #{isVip}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="isDel != null" >
+				and is_del = #{isDel}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[ and  create_time>= date_format(#{startTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[ and create_time <= date_format(#{endTime}, '%Y-%m-%d') ]]>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 插入记录 -->
+	<insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+		insert into park_gate_log (id, user_id, park_code, gate_code, car_no, plate_num, io_state, io_date, in_date, out_date, car_type, pay_type, total_space, remain_space, price, order_id, detailed, picture, is_vip, create_time,is_del)
+		values (#{id}, #{userId}, #{parkCode}, #{gateCode}, #{carNo}, #{plateNum}, #{ioState}, #{ioDate}, #{inDate}, #{outDate}, #{carType}, #{payType}, #{totalSpace}, #{remainSpace}, #{price}, #{orderId}, #{detailed}, #{picture}, #{isVip}, #{createTime},0)
+	</insert>
+
+	<!-- 根据id，修改记录-->
+	<update id="update" parameterType="Object" >
+		update park_gate_log
+		set
+		id=#{id},
+		user_id=#{userId},
+		park_code=#{parkCode},
+		gate_code=#{gateCode},
+		car_no=#{carNo},
+		plate_num=#{plateNum},
+		io_state=#{ioState},
+		io_date=#{ioDate},
+		in_date=#{inDate},
+		out_date=#{outDate},
+		car_type=#{carType},
+		pay_type=#{payType},
+		total_space=#{totalSpace},
+		remain_space=#{remainSpace},
+		price=#{price},
+		order_id=#{orderId},
+		detailed=#{detailed},
+		picture=#{picture},
+		is_vip=#{isVip},
+		create_time=#{createTime},
+		is_del=#{isDel}
+		where
+		id=#{id}
+	</update>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="updateBySelective" parameterType="Object" >
+		update park_gate_log
+		set
+		<trim  suffixOverrides="," >
+			<if test="id != null  ">
+				id=#{id},
+			</if>
+			<if test="userId != null  ">
+				user_id=#{userId},
+			</if>
+			<if test="parkCode != null  ">
+				park_code=#{parkCode},
+			</if>
+			<if test="gateCode != null  ">
+				gate_code=#{gateCode},
+			</if>
+			<if test="carNo != null  ">
+				car_no=#{carNo},
+			</if>
+			<if test="plateNum != null  ">
+				plate_num=#{plateNum},
+			</if>
+			<if test="ioState != null  ">
+				io_state=#{ioState},
+			</if>
+			<if test="ioDate != null  ">
+				io_date=#{ioDate},
+			</if>
+			<if test="inDate != null  ">
+				in_date=#{inDate},
+			</if>
+			<if test="outDate != null  ">
+				out_date=#{outDate},
+			</if>
+			<if test="carType != null  ">
+				car_type=#{carType},
+			</if>
+			<if test="payType != null  ">
+				pay_type=#{payType},
+			</if>
+			<if test="totalSpace != null  ">
+				total_space=#{totalSpace},
+			</if>
+			<if test="remainSpace != null  ">
+				remain_space=#{remainSpace},
+			</if>
+			<if test="price != null  ">
+				price=#{price},
+			</if>
+			<if test="orderId != null  ">
+				order_id=#{orderId},
+			</if>
+			<if test="detailed != null  ">
+				detailed=#{detailed},
+			</if>
+			<if test="picture != null  ">
+				picture=#{picture},
+			</if>
+			<if test="isVip != null  ">
+				is_vip=#{isVip},
+			</if>
+			<if test="createTime != null  ">
+				create_time=#{createTime},
+			</if>
+			<if test="isDel != null  ">
+				is_del=#{isDel},
+			</if>
+		</trim>
+		where
+		id=#{id}
+	</update>
+
+	<!-- 删除记录 -->
+	<delete id="delete" parameterType="Object">
+		delete from park_gate_log
+		where
+		id=#{id}
+	</delete>
+
+	<!-- 根据id查询 -->
+	<select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from park_gate_log
+		where
+		id=#{id}
+	</select>
+	
+	<!-- 根据orderId查询 -->
+	<select id="selectByOrderId"  resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from park_gate_log
+		where
+		order_id=#{orderId}
+	</select>
+
+	<!-- 列表总数-->
+	<select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+		select count(1) from park_gate_log
+		<include refid="Base_Where_Clause"/>
+	</select>
+
+	<!-- 查询列表 -->
+	<select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List"/>
+		from park_gate_log
+		<include refid="Base_Where_Clause"/>
+		<if test="pagerOrder != null and pagerOrder != ''">
+			${pagerOrder}
+		</if>
+		<if test="pagerLimit != null and pagerLimit != ''">
+			${pagerLimit}
+		</if>
+	</select>
+
+	<!--查询有进场并且有出场纪录的数据-->
+	<select id="queryInAndOut" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List"/>
+		from park_gate_log
+		<where>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="parkCode != null" >
+				and park_code = #{parkCode}
+			</if>
+			<if test="gateCode != null" >
+				and gate_code = #{gateCode}
+			</if>
+			<if test="carNo != null" >
+				and car_no = #{carNo}
+			</if>
+			<if test="plateNum != null" >
+				and plate_num = #{plateNum}
+			</if>
+			<if test="ioState != null" >
+				and io_state = #{ioState}
+			</if>
+			<if test="ioDate != null" >
+				and io_date = #{ioDate}
+			</if>
+			<if test="inDate != null" >
+				and in_date = #{inDate}
+			</if>
+			<if test="outDate != null" >
+				and out_date = #{outDate}
+			</if>
+			<if test="carType != null" >
+				and car_type = #{carType}
+			</if>
+			<if test="payType != null" >
+				and pay_type = #{payType}
+			</if>
+			<if test="totalSpace != null" >
+				and total_space = #{totalSpace}
+			</if>
+			<if test="remainSpace != null" >
+				and remain_space = #{remainSpace}
+			</if>
+			<if test="price != null" >
+				and price = #{price}
+			</if>
+			<if test="orderId != null" >
+				and order_id = #{orderId}
+			</if>
+			<if test="detailed != null" >
+				and detailed = #{detailed}
+			</if>
+			<if test="picture != null" >
+				and picture = #{picture}
+			</if>
+			<if test="isVip != null" >
+				and is_vip = #{isVip}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			AND out_date is NOT NULL
+			<![CDATA[AND is_del <> 1 ]]>
+
+		</where>
+		ORDER BY io_date DESC
+	</select>
+
+
+
+	<select id="queryInOrOut"  resultMap="BaseResultMap" parameterType="Object">
+
+	call query_inorout(#{userId})
+
+	 <!-- <select id="queryInOrOut"  resultMap="BaseResultMap" parameterType="Object">
+		SELECT * FROM
+		  (SELECT
+				 id,
+				 user_id,
+				 park_code,
+				 gate_code,
+				 car_no,
+				 plate_num,
+				 io_state,
+				 io_date,
+				 in_date,
+				 NULL AS 'out_date',
+				 car_type,
+				 pay_type,
+				 total_space,
+				 remain_space,
+				 price,
+				 order_id,
+				 detailed,
+				 picture,
+				 is_vip,
+				 create_time,
+		 		 is_del
+		 	FROM
+			 park_gate_log AS p_in
+		 	WHERE
+		 	p_in.in_date IS NOT NULL
+		 	UNION
+			 SELECT
+				 id,
+				 user_id,
+				 park_code,
+				 gate_code,
+				 car_no,
+				 plate_num,
+				 io_state,
+				 io_date,
+				 NULL AS 'in_date',
+				 out_date,
+				 car_type,
+				 pay_type,
+				 total_space,
+				 remain_space,
+				 price,
+				 order_id,
+				 detailed,
+				 picture,
+				 is_vip,
+				 create_time,
+		 		 is_del
+				 FROM
+		 	park_gate_log AS p_in
+		 WHERE
+			 p_in.out_date IS NOT NULL
+		  ) AS pl
+		 <where>
+			 <if test="id != null" >
+				 and id = #{id}
+			 </if>
+			 <if test="userId != null" >
+				 and user_id = #{userId}
+			 </if>
+			 <if test="parkCode != null" >
+				 and park_code = #{parkCode}
+			 </if>
+			 <if test="gateCode != null" >
+				 and gate_code = #{gateCode}
+			 </if>
+			 <if test="carNo != null" >
+				 and car_no = #{carNo}
+			 </if>
+			 <if test="plateNum != null" >
+				 and plate_num = #{plateNum}
+			 </if>
+			 <if test="ioState != null" >
+				 and io_state = #{ioState}
+			 </if>
+			 <if test="ioDate != null" >
+				 and io_date = #{ioDate}
+			 </if>
+			 <if test="inDate != null" >
+				 and in_date = #{inDate}
+			 </if>
+			 <if test="outDate != null" >
+				 and out_date = #{outDate}
+			 </if>
+			 <if test="carType != null" >
+				 and car_type = #{carType}
+			 </if>
+			 <if test="payType != null" >
+				 and pay_type = #{payType}
+			 </if>
+			 <if test="totalSpace != null" >
+				 and total_space = #{totalSpace}
+			 </if>
+			 <if test="remainSpace != null" >
+				 and remain_space = #{remainSpace}
+			 </if>
+			 <if test="price != null" >
+				 and price = #{price}
+			 </if>
+			 <if test="orderId != null" >
+				 and order_id = #{orderId}
+			 </if>
+			 <if test="detailed != null" >
+				 and detailed = #{detailed}
+			 </if>
+			 <if test="picture != null" >
+				 and picture = #{picture}
+			 </if>
+			 <if test="isVip != null" >
+				 and is_vip = #{isVip}
+			 </if>
+			 <if test="createTime != null" >
+				 and create_time = #{createTime}
+			 </if>
+			 <![CDATA[AND pl.is_del<>1]]>
+		 </where>
+		   ORDER BY pl.io_date DESC -->
+	 </select>
+
+	<!-- 查询列表 ，导出Excel-->
+	<select id="selectDataToExcel" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List"/>
+		from park_gate_log
+		<include refid="Base_Where_Clause"/>
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.UserPushMessageMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.UserPushMessageModel" >
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="type" property="type"/>
+        <result column="content" property="content"/>
+        <result column="title" property="title"/>
+        <result column="is_read" property="isRead"/>
+        <result column="link_url" property="linkUrl"/>
+    </resultMap>
+
+    <!-- user_push_message 表的所有字段 -->
+    <sql id="Base_Column_List" >
+        id, user_id,create_time, type,content,title,is_read,link_url
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+            <if test="id != null" >
+                and id = #{id}
+            </if>
+            <if test="userId != null" >
+                and user_id = #{userId}
+            </if>
+            <if test="linkUrl != null" >
+                and link_url = #{linkUrl}
+            </if>
+            <if test="content != null" >
+                and content = #{content}
+            </if>
+            <if test="createTime != null" >
+                and create_time = #{createTime}
+            </if>
+            <if test="type != null" >
+                and type = #{type}
+            </if>
+            <if test="title != null" >
+                and title = #{title}
+            </if>
+            <if test="isRead != null" >
+                and is_read = #{isRead}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into user_push_message (id, user_id,create_time, type,content,title,is_read,link_url)
+        values (#{id}, #{userId}, #{createTime}, #{type},#{content}, #{title},#{isRead}, #{linkUrl})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update user_push_message
+        set
+        id=#{id},
+        user_id=#{userId},
+        create_time=#{createTime},
+        type=#{type},
+        content=#{content},
+        title=#{title},
+        is_read=#{isRead},
+        link_url=#{linkUrl},
+        where
+        id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update user_push_message
+        set
+        <trim  suffixOverrides="," >
+            <if test="id != null" >
+                 id = #{id},
+            </if>
+            <if test="userId != null" >
+                 user_id = #{userId},
+            </if>
+            <if test="linkUrl != null" >
+                 link_url = #{linkUrl},
+            </if>
+            <if test="content != null" >
+                 content = #{content},
+            </if>
+            <if test="createTime != null" >
+                 create_time = #{createTime},
+            </if>
+            <if test="type != null" >
+                 type = #{type},
+            </if>
+            <if test="title != null" >
+                 title = #{title},
+            </if>
+            <if test="isRead != null" >
+                 is_read = #{isRead},
+            </if>
+        </trim>
+        where
+        id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from user_push_message
+        where
+        id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        from user_push_message
+        where
+        id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from user_push_message
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from user_push_message
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+
+    <!--根据用户id查询用户消息-->
+    <select id="selectUserId"  resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" />
+        from user_push_message
+        WHERE
+        user_id=${_parameter}
+    </select>
+
+    <!--根据用户id和消息类型查询用户信息-->
+    <select id="selectMessageByType"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        from user_push_message
+        WHERE
+        user_id=${userId}
+        AND
+        type=${type}
+    </select>
+</mapper>
+

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/mvc  
+    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+    http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+    <!-- 扫描控制器类 -->
+    <context:component-scan base-package="com.agent.czb.service.*.restful" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"/>
+    </context:component-scan>
+
+    <!-- 文件上传 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >
+        <!--1024*2000即2000k-->
+        <property name="maxUploadSize" value="2048000"/>
+        <!--resolveLazily属性启用是为了推迟文件解析，以便在UploadAction 中捕获文件大小异常-->
+        <property name="resolveLazily" value="true"/>
+    </bean>
+
+    <mvc:interceptors>
+        <!-- 默认Restful请求都进行拦截 -->
+        <bean class="com.agent.czb.service.interceptor.RestfulLogInterceptor"/>
+        <!-- 默认停车场接口拦截器 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/cooper/**"/>
+            <mvc:mapping path="/syspark/**"/>
+            <mvc:exclude-mapping path="/cooper/login" />
+            <mvc:exclude-mapping path="/syspark/login" />
+            <bean class="com.agent.czb.service.interceptor.CooperAuthInterceptor" />
+        </mvc:interceptor>
+        <!-- 默认停车场接口拦截器 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/services/**"/>
+            <mvc:exclude-mapping path="/services/userInfo/**" />
+            <bean class="com.agent.czb.service.interceptor.ServiceAuthInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+    <!-- 使用多动作控制器必须在配置文件中加入注解支持 -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                    <property name="objectMapper">
+                        <bean class="com.fasterxml.jackson.databind.ObjectMapper">
+                            <property name="dateFormat">
+                                <bean class="java.text.SimpleDateFormat">
+                                    <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss" />
+                                </bean>
+                            </property>
+                            <property name="serializationInclusion">
+                                <!-- 把枚举类型转为一个bean才能注入, 不序列化空值属性 -->
+                                <util:constant static-field="com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL" />
+                            </property>
+                        </bean>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 采用注解方式配置MVC -->
+    <!--<mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>-->
+    <!-- 配置SRPING REST -->
+    <!--<bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="favorPathExtension" value="true"/>
+        <property name="favorParameter" value="true"/>
+        <property name="defaultContentType" value="text/html"/>
+        <property name="mediaTypes">
+            <value>
+                json=application/json
+                xml=application/xml
+                html=text/html
+            </value>
+        </property>
+    </bean>-->
+
+</beans>
+	
+	

@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.CarportInfoMapper" >
+	<!-- Result Map-->
+	<resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.CarportInfoModel" >
+		<id column="id" property="id"/>
+		<result column="code" property="code"/>
+		<result column="type" property="type"/>
+		<result column="name" property="name"/>
+		<result column="title" property="title"/>
+		<result column="model" property="model"/>
+		<result column="des" property="des"/>
+		<result column="price" property="price"/>
+		<result column="city" property="city"/>
+		<result column="area" property="area"/>
+		<result column="addr" property="addr"/>
+		<result column="open_time" property="openTime"/>
+		<result column="contacter" property="contacter"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="phone" property="phone"/>
+		<result column="img_url" property="imgUrl"/>
+		<result column="state" property="state"/>
+		<result column="buy_log_id" property="buyLogId"/>
+		<result column="user_id" property="userId"/>
+		<result column="months" property="months"/>
+		<result column="create_time" property="createTime"/>
+		<result column="eff_time" property="effTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="visits"  property="visits"/>
+		<result column="is_del" property="isDel"/>
+		<result column="publish_type" property="publishType"/>
+		<result column="minute_price" property="minutePrice"/>
+		<result column="max_amount" property="maxAmount"/>
+		<result column="is_buy" property="isBuy"/>
+	</resultMap>
+
+	<!-- carport_info 表的所有字段 -->
+	<sql id="Base_Column_List" >
+		id, code, type, name, title, model, des, price, city, area, addr, open_time, contacter, park_code, phone, img_url, state, buy_log_id, user_id, months, create_time, eff_time, update_time, visits, is_del,publish_type,minute_price,max_amount,is_buy
+	</sql>
+
+	<!-- 查询条件 -->
+	<sql id="Base_Where_Clause">
+		<where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="fId != null" >
+				<![CDATA[ and id < #{fId} ]]>
+			</if>
+			<if test="code != null" >
+				and code = #{code}
+			</if>
+			<if test="type != null" >
+				and type = #{type}
+			</if>
+			<if test="name != null" >
+				and name = #{name}
+			</if>
+			<if test="title != null" >
+				and title = #{title}
+			</if>
+			<if test="model != null" >
+				and model = #{model}
+			</if>
+			<if test="des != null" >
+				and des = #{des}
+			</if>
+			<if test="price != null" >
+				and price = #{price}
+			</if>
+			<if test="city != null" >
+				and city = #{city}
+			</if>
+			<if test="area != null" >
+				and area = #{area}
+			</if>
+			<if test="addr != null" >
+				and addr = #{addr}
+			</if>
+			<if test="openTime != null" >
+				and open_time = #{openTime}
+			</if>
+			<if test="contacter != null" >
+				and contacter = #{contacter}
+			</if>
+			<if test="parkCode != null" >
+				and park_code = #{parkCode}
+			</if>
+			<if test="phone != null" >
+				and phone = #{phone}
+			</if>
+			<if test="imgUrl != null" >
+				and img_url = #{imgUrl}
+			</if>
+			<if test="state != null" >
+				and (
+				state = #{state}
+				<if test="publishType == 1" >
+					OR state = 6
+				</if>
+				)
+			</if>
+
+			<if test="buyLogId != null" >
+				and buy_log_id = #{buyLogId}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="months != null" >
+				and months = #{months}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="effTime != null" >
+				and eff_time = #{effTime}
+			</if>
+			<if test="updateTime != null" >
+				and update_time = #{updateTime}
+			</if>
+			<if test="visits != null">
+				and visits = #{visits}
+			</if>
+			<if test="isDel != null" >
+				and is_del = #{isDel}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[ and create_date >= date_format(${startTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[ and create_date <= date_format(${endTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="publishType != null" >
+				and publish_type = #{publishType}
+			</if>
+			<if test="minutePrice != null" >
+				and minute_price = #{minutePrice}
+			</if>
+			<if test="maxAmount != null" >
+				and max_amount = #{maxAmount}
+			</if>
+			<if test="isBuy != null" >
+				and is_buy = #{isBuy}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 插入记录 -->
+	<insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+		insert into carport_info (id, code, type, name, title, model, des, price, city, area, addr, open_time, contacter, park_code, phone, img_url, state, buy_log_id, user_id, months, create_time, eff_time, update_time,visits, is_del,publish_type,minute_price,max_amount,is_buy)
+		values (#{id}, #{code}, #{type}, #{name}, #{title}, #{model}, #{des}, #{price}, #{city}, #{area}, #{addr}, #{openTime}, #{contacter}, #{parkCode}, #{phone}, #{imgUrl}, #{state}, #{buyLogId}, #{userId}, #{months}, #{createTime}, #{effTime}, #{updateTime},#{visits}, #{isDel},#{publishType},#{minutePrice},#{maxAmount},#{isBuy})
+	</insert>
+
+	<!-- 根据id，修改记录-->
+	<update id="update" parameterType="Object" >
+		update carport_info
+		set
+		id=#{id},
+		code=#{code},
+		type=#{type},
+		name=#{name},
+		title=#{title},
+		model=#{model},
+		des=#{des},
+		price=#{price},
+		city=#{city},
+		area=#{area},
+		addr=#{addr},
+		open_time=#{openTime},
+		contacter=#{contacter},
+		park_code=#{parkCode},
+		phone=#{phone},
+		img_url=#{imgUrl},
+		state=#{state},
+		buy_log_id=#{buyLogId},
+		user_id=#{userId},
+		months=#{months},
+		create_time=#{createTime},
+		eff_time=#{effTime},
+		update_time=#{updateTime},
+		visits=#{visits},
+		is_del=#{isDel},
+		publish_type=#{publishType},
+		minute_price=#{minutePrice},
+		max_amount=#{maxAmount},
+		is_buy=#{isBuy}
+		where
+		id=#{id}
+	</update>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="updateBySelective" parameterType="Object" >
+		update carport_info
+		set
+		<trim  suffixOverrides="," >
+			<if test="id != null  ">
+				id=#{id},
+			</if>
+			<if test="code != null  ">
+				code=#{code},
+			</if>
+			<if test="type != null  ">
+				type=#{type},
+			</if>
+			<if test="name != null  ">
+				name=#{name},
+			</if>
+			<if test="title != null  ">
+				title=#{title},
+			</if>
+			<if test="model != null  ">
+				model=#{model},
+			</if>
+			<if test="des != null  ">
+				des=#{des},
+			</if>
+			<if test="price != null  ">
+				price=#{price},
+			</if>
+			<if test="city != null  ">
+				city=#{city},
+			</if>
+			<if test="area != null  ">
+				area=#{area},
+			</if>
+			<if test="addr != null  ">
+				addr=#{addr},
+			</if>
+			<if test="openTime != null  ">
+				open_time=#{openTime},
+			</if>
+			<if test="contacter != null  ">
+				contacter=#{contacter},
+			</if>
+			<if test="parkCode != null  ">
+				park_code=#{parkCode},
+			</if>
+			<if test="phone != null  ">
+				phone=#{phone},
+			</if>
+			<if test="imgUrl != null  ">
+				img_url=#{imgUrl},
+			</if>
+			<if test="state != null  ">
+				state=#{state},
+			</if>
+			<if test="buyLogId != null  ">
+				buy_log_id=#{buyLogId},
+			</if>
+			<if test="userId != null  ">
+				user_id=#{userId},
+			</if>
+			<if test="months != null  ">
+				months=#{months},
+			</if>
+			<if test="createTime != null  ">
+				create_time=#{createTime},
+			</if>
+			<if test="effTime != null  ">
+				eff_time=#{effTime},
+			</if>
+			<if test="updateTime != null  ">
+				update_time=#{updateTime},
+			</if>
+			<if test="visits != null  ">
+				visits=#{visits},
+			</if>
+			<if test="isDel != null  ">
+				is_del=#{isDel},
+			</if>
+			<if test="publishType != null  ">
+				publish_type=#{publishType},
+			</if>
+			<if test="minutePrice != null  ">
+				minute_price=#{minutePrice},
+			</if>
+			<if test="maxAmount != null  ">
+				max_amount=#{maxAmount},
+			</if>
+		</trim>
+		where
+		id=#{id}
+	</update>
+
+	<!-- 删除记录 -->
+	<delete id="delete" parameterType="Object">
+		delete from carport_info
+		where
+		id=#{id}
+	</delete>
+
+	<!-- 根据id查询 -->
+	<select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from carport_info
+		where
+		id=#{id}
+	</select>
+
+	<!-- 列表总数-->
+	<select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+		select count(1) from carport_info
+		<include refid="Base_Where_Clause"/>
+	</select>
+
+	<!-- 查询列表 -->
+	<select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List"/>
+		from carport_info
+		<include refid="Base_Where_Clause"/>
+		<if test="pagerOrder != null and pagerOrder != ''">
+			${pagerOrder}
+		</if>
+		<if test="pagerLimit != null and pagerLimit != ''">
+			${pagerLimit}
+		</if>
+	</select>
+
+	<select id="findByIds" resultMap="BaseResultMap" >
+		Select
+		<include refid="Base_Column_List" />
+		from carport_info
+		where id in
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<update id="updateOverdueStatus">
+		<![CDATA[ update carport_info a set a.state=2 where a.state='0' and a.eff_time < now() ]]>
+	</update>
+
+	<select id="findOverdueStatus" resultMap="BaseResultMap" >
+			select
+			<include refid="Base_Column_List" />
+			from carport_info a
+			where (a.state='0'OR a.state='6') and
+			<![CDATA[ a.eff_time < now() ]]>
+
+	</select>
+
+   <select id="selectCount" resultType="java.lang.Integer" >
+		select COUNT(1)
+		from carport_info
+		where
+		id=#{id}
+
+	</select>
+
+</mapper>

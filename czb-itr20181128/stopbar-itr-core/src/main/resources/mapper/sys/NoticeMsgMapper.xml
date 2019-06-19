@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.NoticeMsgMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.NoticeMsgModel" >
+        <id column="id" property="id"/>
+		<result column="msg_name" property="msgName"/>
+		<result column="msg_title" property="msgTitle"/>
+		<result column="content" property="content"/>
+		<result column="type" property="type"/>
+		<result column="state" property="state"/>
+		<result column="user_id" property="userId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="is_del" property="isDel"/>
+    </resultMap>
+
+    <!-- notice_msg 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, msg_name, msg_title, content, type, state, user_id, create_time, update_time, is_del
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="msgName != null" >
+				and msg_name = #{msgName}
+			</if>
+			<if test="msgTitle != null" >
+				and msg_title = #{msgTitle}
+			</if>
+			<if test="content != null" >
+				and content = #{content}
+			</if>
+			<if test="type != null" >
+				and type = #{type}
+			</if>
+			<if test="state != null" >
+				and state = #{state}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="updateTime != null" >
+				and update_time = #{updateTime}
+			</if>
+			<if test="isDel != null" >
+				and is_del = #{isDel}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_date >= date_format(${startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_date <= date_format(${endTime}, '%Y-%m-%d') ]]>
+            </if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into notice_msg (id, msg_name, msg_title, content, type, state, user_id, create_time, update_time, is_del)
+        values (#{id}, #{msgName}, #{msgTitle}, #{content}, #{type}, #{state}, #{userId}, #{createTime}, #{updateTime}, #{isDel})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update notice_msg
+			set
+				id=#{id}, 
+				msg_name=#{msgName}, 
+				msg_title=#{msgTitle}, 
+				content=#{content}, 
+				type=#{type}, 
+				state=#{state}, 
+				user_id=#{userId}, 
+				create_time=#{createTime}, 
+				update_time=#{updateTime}, 
+				is_del=#{isDel}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update notice_msg
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="msgName != null  ">
+						msg_name=#{msgName},
+                    </if>
+                    <if test="msgTitle != null  ">
+						msg_title=#{msgTitle},
+                    </if>
+                    <if test="content != null  ">
+						content=#{content},
+                    </if>
+                    <if test="type != null  ">
+						type=#{type},
+                    </if>
+                    <if test="state != null  ">
+						state=#{state},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                    <if test="updateTime != null  ">
+						update_time=#{updateTime},
+                    </if>
+                    <if test="isDel != null  ">
+						is_del=#{isDel},
+                    </if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from notice_msg
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from notice_msg
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from notice_msg
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from notice_msg
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+
+    <!-- 获取最后几条消息 -->
+    <select id="selectLastMsg"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" /> from notice_msg order by id desc LIMIT ${limit}
+    </select>
+</mapper>

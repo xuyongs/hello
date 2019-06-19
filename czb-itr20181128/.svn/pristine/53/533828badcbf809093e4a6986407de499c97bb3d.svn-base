@@ -1,0 +1,4 @@
+client.uri=http://139.196.174.197:9092
+#client.uri=http://localhost:9092
+park.id=1
+park.code=PD_001

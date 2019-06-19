@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.UserCouponMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.UserCouponModel" >
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="coupon_type" property="couponType"/>
+        <result column="amount" property="amount"/>
+        <result column="is_used" property="isUsed"/>
+    </resultMap>
+
+    <!-- user_coupon 表的所有字段 -->
+    <sql id="Base_Column_List" >
+        id, user_id,create_time, end_time,update_time,coupon_type,amount,is_used
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+            <if test="id != null" >
+                and id = #{id}
+            </if>
+            <if test="userId != null" >
+                and user_id = #{userId}
+            </if>
+            <if test="createTime != null" >
+                and create_time = #{createTime}
+            </if>
+            <if test="endTime != null" >
+                and end_time = #{endTime}
+            </if>
+            <if test="updateTime != null" >
+                and update_time = #{updateTime}
+            </if>
+            <if test="couponType != null" >
+                and coupon_type = #{couponType}
+            </if>
+            <if test="amount != null" >
+                and amount = #{amount}
+            </if>
+            <if test="isUsed != null" >
+                and is_used = #{isUsed}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into user_coupon (id, user_id,create_time,end_time,update_time,coupon_type,amount,is_used)
+        values (#{id}, #{userId}, #{createTime}, #{endTime},#{updateTime}, #{couponType},#{amount}, #{isUsed})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update user_coupon
+        set
+        id=#{id},
+        user_id=#{userId},
+        create_time=#{createTime},
+        end_time=#{endTime},
+        update_time=#{updateTime},
+        coupon_type=#{couponType},
+        amount=#{amount},
+        is_used=#{isUsed},
+        where
+        id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update user_coupon
+        set
+        <trim  suffixOverrides="," >
+            <if test="id != null" >
+                 id = #{id},
+            </if>
+            <if test="userId != null" >
+                 user_id = #{userId},
+            </if>
+            <if test="createTime != null" >
+                 create_time = #{createTime},
+            </if>
+            <if test="endTime != null" >
+                 end_time = #{endTime},
+            </if>
+            <if test="updateTime != null" >
+                 update_time = #{updateTime},
+            </if>
+            <if test="couponType != null" >
+                 coupon_type = #{couponType},
+            </if>
+            <if test="amount != null" >
+                 amount = #{amount},
+            </if>
+            <if test="isUsed != null" >
+                 is_used = #{isUsed},
+            </if>
+        </trim>
+        where
+        id=#{id}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from user_coupon
+        where
+        id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        from user_coupon
+        where
+        id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from user_coupon
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from user_coupon
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+
+    <!--根据用户id查询用户优惠券-->
+    <select id="selectUserId"  resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" />
+        from user_coupon
+        WHERE
+        user_id=${_parameter}
+    </select>
+
+    <!--根据用户id和优惠券类型查询优惠券-->
+    <select id="selectCouponByType"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        from user_coupon
+        WHERE
+        user_id=${userId}
+        AND
+        coupon_type=${couponype}
+    </select>
+    <!--根据用户id,优惠券类型,优惠券面值,查询未使用且未过期的优惠券-->
+    <select id="selectAvailableCoupons"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        from user_coupon
+        WHERE
+        is_used=0
+        AND
+        end_time>=now();
+        AND
+        user_id=${userId}
+        AND
+        amount>=${amount}
+        AND
+        coupon_type=${couponype}
+    </select>
+</mapper>
+

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.WalletInfoMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.WalletInfoModel" >
+        <id column="id" property="id"/>
+		<result column="total" property="total"/>
+		<result column="version" property="version"/>
+		<result column="state" property="state"/>
+		<result column="user_id" property="userId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- wallet_info 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, total, version, state, user_id, create_time, update_time
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="total != null" >
+				and total = #{total}
+			</if>
+			<if test="version != null" >
+				and version = #{version}
+			</if>
+			<if test="state != null" >
+				and state = #{state}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+			<if test="updateTime != null" >
+				and update_time = #{updateTime}
+			</if>
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and create_date >= date_format(${startTime}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and create_date <= date_format(${endTime}, '%Y-%m-%d') ]]>
+            </if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into wallet_info (id, total, version, state, user_id, create_time, update_time)
+        values (#{id}, #{total}, #{version}, #{state}, #{userId}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update wallet_info
+			set
+				id=#{id}, 
+				total=#{total}, 
+				version=#{version}, 
+				state=#{state}, 
+				user_id=#{userId}, 
+				create_time=#{createTime}, 
+				update_time=#{updateTime}
+        	where
+				id=#{id}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update wallet_info
+			set
+                <trim  suffixOverrides="," >
+                    <if test="id != null  ">
+						id=#{id},
+                    </if>
+                    <if test="total != null  ">
+						total=#{total},
+                    </if>
+                    <if test="version != null  ">
+						version=#{version},
+                    </if>
+                    <if test="state != null  ">
+						state=#{state},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="createTime != null  ">
+						create_time=#{createTime},
+                    </if>
+                    <if test="updateTime != null  ">
+						update_time=#{updateTime},
+                    </if>
+                </trim>
+			where
+				id=#{id}
+    </update>
+
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateTotal" parameterType="Object" >
+        update wallet_info
+        set
+        <trim  suffixOverrides="," >
+            <if test="id != null  ">
+                id=#{id},
+            </if>
+            <if test="total != null  ">
+                total=total+#{total},
+            </if>
+            <if test="version != null  ">
+                version=#{newVersion},
+            </if>
+            <if test="state != null  ">
+                state=#{state},
+            </if>
+            <if test="userId != null  ">
+                user_id=#{userId},
+            </if>
+            <if test="createTime != null  ">
+                create_time=#{createTime},
+            </if>
+            <if test="updateTime != null  ">
+                update_time=#{updateTime},
+            </if>
+        </trim>
+        where
+        id=#{id} and version=#{version}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from wallet_info
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from wallet_info
+			where
+				id=#{id}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="pageCount" resultType="java.lang.Long" parameterType="Object">
+        select count(1) from wallet_info
+        <include refid="Base_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="pageList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from wallet_info
+        <include refid="Base_Where_Clause"/>
+        <if test="pagerOrder != null and pagerOrder != ''">
+            ${pagerOrder}
+        </if>
+        <if test="pagerLimit != null and pagerLimit != ''">
+            ${pagerLimit}
+        </if>
+    </select>
+</mapper>

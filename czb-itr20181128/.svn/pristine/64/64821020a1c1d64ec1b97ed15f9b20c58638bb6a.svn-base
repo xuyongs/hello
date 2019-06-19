@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.core.sys.mapper.UserFeedbackMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.core.sys.model.UserFeedbackModel" >
+        <id column="id" property="id"/>
+		<result column="user_id" property="userId"/>
+		<result column="note" property="note"/>
+		<result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- user_info 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		id, user_id, note,create_time
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Base_Where_Clause">
+        <where>
+			<if test="id != null" >
+				and id = #{id}
+			</if>
+			<if test="userId!= null" >
+				and user_id = #{userId}
+			</if>
+			<if test="note != null" >
+				and note = #{note}
+			</if>
+			<if test="createTime != null" >
+				and create_time = #{createTime}
+			</if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="insert" parameterType="Object" useGeneratedKeys="true" keyProperty="id">
+        insert into user_feedback (id, user_id, note,create_time)
+        values (#{id}, #{userId}, #{note},#{createTime})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update user_info
+			set
+				id=#{id}, 
+				user_id = #{userId}, 
+				note = #{note}
+        	where
+				id=#{id}
+    </update>
+
+   
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from user_feedback
+			where
+				id=#{id}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="selectById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from user_feedback
+			where 
+				id=#{id}
+    </select>
+    <!-- 根据userid查询 -->
+    <select id="selectByUserId"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from user_feedback
+			where
+				user_id = #{userId}
+				  ORDER BY create_time DESC 
+    </select>
+    
+     <!-- 根据userid查询 总数值-->
+     <select id="selectCount"  resultType="java.lang.Integer">
+        select COUNT(*)
+        	from user_feedback
+			where
+				user_id = #{userId}
+    </select>
+</mapper>

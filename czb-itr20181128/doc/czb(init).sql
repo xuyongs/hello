@@ -1,0 +1,574 @@
+-- --------------------------------------------------------
+-- 主机:                           112.74.114.2
+-- 服务器版本:                        10.0.13-MariaDB-log - MariaDB Server
+-- 服务器操作系统:                      Linux
+-- HeidiSQL 版本:                  9.2.0.4947
+-- --------------------------------------------------------
+
+
+
+-- 导出 czb 的数据库结构
+ CREATE DATABASE IF NOT EXISTS `czb` 
+ USE `czb`;
+
+
+-- 导出  表 czb.data_dict 结构
+CREATE TABLE IF NOT EXISTS `data_dict` (
+  `dict_id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '字典id',
+  `parent_dict_id` INT(11) DEFAULT NULL COMMENT '父字典id',
+  `dict_name` VARCHAR(20) DEFAULT NULL COMMENT '字典名称',
+  `dict_code` VARCHAR(20) DEFAULT NULL COMMENT '字典代码',
+  `dict_key` VARCHAR(10) DEFAULT NULL COMMENT '字典key',
+  -- `dict_value` VARCHAR(30) DEFAULT NULL CO`dictionarytype``dictionarytype``life`MMENT '字典value',
+  `dict_value` VARCHAR(30) DEFAULT NULL COMMENT '字典value',
+  `note` VARCHAR(40) DEFAULT NULL COMMENT '说明',
+  `user_id` INT(11) DEFAULT NULL COMMENT '创建人',
+  `update_date` DATETIME DEFAULT NULL,
+  `create_date` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`dict_id`)
+) ENGINE=INNODB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='数据字典';
+
+-- 正在导出表  czb.data_dict 的数据：~2 rows (大约)
+/*!40000 ALTER TABLE `data_dict` DISABLE KEYS */;
+INSERT INTO `data_dict` (`dict_id`, `parent_dict_id`, `dict_name`, `dict_code`, `dict_key`, `dict_value`, `note`, `user_id`, `update_date`, `create_date`) VALUES
+	(1, NULL, '测试', 'test_01', 'test_02', 'test_02', 'test_01', 35, '2015-05-17 12:12:12', NULL),
+	(2, NULL, '测试02', '测试02', '测试02', '测试02', '测试022', 12, NULL, NULL);
+/*!40000 ALTER TABLE `data_dict` ENABLE KEYS */;
+
+
+-- 导出  表 czb.site_main 结构
+CREATE TABLE IF NOT EXISTS `site_main` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` VARCHAR(50) DEFAULT NULL COMMENT '网站简称',
+  `domain` VARCHAR(50) DEFAULT NULL COMMENT '域名 不带http://',
+  `link` VARCHAR(200) DEFAULT NULL COMMENT '网址连接 带http://',
+  `state` INT(1) DEFAULT NULL COMMENT '状态 0禁用 1可用 2审核中',
+  `createTime` DATETIME DEFAULT NULL COMMENT '创建时间',
+  `updateTime` DATETIME DEFAULT NULL COMMENT '修改时间',
+  `rank` INT(11) NOT NULL DEFAULT '0' COMMENT '排序',
+  `pic` VARCHAR(200) DEFAULT NULL COMMENT '图片URL',
+  `deleted` INT(11) NOT NULL DEFAULT '0' COMMENT '删除状态 0=未删除 1=删除',
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- 正在导出表  czb.site_main 的数据：~0 rows (大约)
+/*!40000 ALTER TABLE `site_main` DISABLE KEYS */;
+/*!40000 ALTER TABLE `site_main` ENABLE KEYS */;
+
+
+-- 导出  表 czb.site_type 结构
+CREATE TABLE IF NOT EXISTS `site_type` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'id 主键',
+  `name` VARCHAR(20) NOT NULL COMMENT '分类名称',
+  `code` VARCHAR(10) DEFAULT NULL COMMENT 'code 英文和数字',
+  `rank` INT(11) NOT NULL DEFAULT '0' COMMENT '排序',
+  `descr` VARCHAR(250) DEFAULT NULL COMMENT '描述',
+  `state` INT(1) DEFAULT NULL COMMENT '状态 0=可用,1=禁用',
+  `createTime` DATETIME DEFAULT NULL COMMENT '创建时间',
+  `updateTime` DATETIME DEFAULT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- 正在导出表  czb.site_type 的数据：~0 rows (大约)
+/*!40000 ALTER TABLE `site_type` DISABLE KEYS */;
+/*!40000 ALTER TABLE `site_type` ENABLE KEYS */;
+
+
+-- 导出  表 czb.site_type_rel 结构
+CREATE TABLE IF NOT EXISTS `site_type_rel` (
+  `siteId` INT(11) NOT NULL COMMENT '站点id 关联：site_main.id',
+  `siteTypeId` INT(11) NOT NULL COMMENT '站点分类id 关联：site_type.id'
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- 正在导出表  czb.site_type_rel 的数据：~0 rows (大约)
+/*!40000 ALTER TABLE `site_type_rel` DISABLE KEYS */;
+/*!40000 ALTER TABLE `site_type_rel` ENABLE KEYS */;
+
+
+-- 导出  表 czb.sys_menu 结构
+CREATE TABLE IF NOT EXISTS `sys_menu` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` VARCHAR(50) DEFAULT NULL COMMENT '菜单名称',
+  `url` VARCHAR(100) DEFAULT NULL COMMENT '系统url',
+  `parentId` INT(10) DEFAULT NULL COMMENT ' 父id 关联sys_menu.id',
+  `deleted` INT(1) NOT NULL DEFAULT '0' COMMENT '是否删除,0=未删除，1=已删除',
+  `createTime` DATETIME DEFAULT NULL COMMENT '创建时间',
+  `updateTime` DATETIME DEFAULT NULL COMMENT '修改时间',
+  `rank` INT(11) NOT NULL DEFAULT '0' COMMENT '排序',
+  `actions` VARCHAR(500) DEFAULT '0' COMMENT '注册Action 按钮|分隔',
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
+
+-- 正在导出表  czb.sys_menu 的数据：~34 rows (大约)
+/*!40000 ALTER TABLE `sys_menu` DISABLE KEYS */;
+INSERT INTO `sys_menu` (`id`, `name`, `url`, `parentId`, `deleted`, `createTime`, `updateTime`, `rank`, `actions`) VALUES
+	(1, '系统管理', '', NULL, 0, '2012-12-23 17:21:58', '2013-01-10 22:30:50', 1, ''),
+	(2, '菜单管理', '/sysMenu/menu.shtml', 1, 0, '2012-12-23 18:18:32', '2013-01-13 02:29:33', 0, 'dataList.do'),
+	(3, '活动管理', '', NULL, 0, '2012-12-23 20:26:35', '2015-08-23 09:53:50', 6, ''),
+	(4, '站点信息管理', '/siteMain/list.shtml', 3, 1, '2012-12-23 20:26:53', '2013-01-13 01:24:47', 0, 'dataList.do|/siteType/typeListJson.do'),
+	(5, '站点类型', '/siteType/list.shtml', 3, 1, '2012-12-23 20:28:23', '2013-01-13 01:20:46', 0, 'dataList.do'),
+	(6, '操作员管理', '/sysUser/list.shtml', 1, 0, '2012-12-23 22:15:33', '2013-01-13 00:57:51', 0, 'dataList.do'),
+	(7, '角色管理', '/sysRole/role.shtml', 1, 0, '2012-12-24 22:17:51', '2013-01-13 01:15:00', 0, 'dataList.do|/sysMenu/getMenuTree.do'),
+	(8, '操作员授权', '/sysUser/userRole.shtml', 1, 0, '2013-01-06 11:42:26', '2013-01-14 11:35:04', 0, 'userList.do|/sysRole/loadRoleList.do'),
+	(9, '用户管理', '', NULL, 0, '2015-08-09 13:53:13', '2015-08-09 13:58:02', 2, ''),
+	(10, '用户信息', '/userInfo/list.shtml', 9, 0, '2015-08-09 13:54:08', NULL, 1, ''),
+	(14, '字典管理', '/dataDict/list.shtml', 1, 0, '2015-06-08 20:36:50', '2015-06-08 21:02:56', 0, 'dataList.do');
+/*!40000 ALTER TABLE `sys_menu` ENABLE KEYS */;
+
+
+-- 导出  表 czb.sys_menu_btn 结构
+CREATE TABLE IF NOT EXISTS `sys_menu_btn` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `menuid` INT(11) NOT NULL COMMENT ' 菜单id关联 sys_menu.id',
+  `btnName` VARCHAR(30) DEFAULT NULL COMMENT '按钮名称',
+  `btnType` VARCHAR(30) DEFAULT NULL COMMENT '按钮类型，用于列表页显示的按钮',
+  `actionUrls` VARCHAR(250) DEFAULT NULL COMMENT 'url注册，用"," 分隔 。用于权限控制UR',
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8;
+
+-- 正在导出表  czb.sys_menu_btn 的数据：~67 rows (大约)
+/*!40000 ALTER TABLE `sys_menu_btn` DISABLE KEYS */;
+INSERT INTO `sys_menu_btn` (`id`, `menuid`, `btnName`, `btnType`, `actionUrls`) VALUES
+	(5, 2, '添加', 'add', 'save.do'),
+	(6, 2, '修改', 'edit', 'getId.do|save.do'),
+	(7, 2, '删除', 'remove', 'delete.do'),
+	(8, 6, '添加', 'add', 'save.do'),
+	(9, 6, '修改', 'edit', 'getId.do|save.do'),
+	(10, 6, '修改密码', 'editPwd', 'updatePwd.do'),
+	(11, 6, '删除', 'remove', 'delete.do'),
+	(12, 7, '添加', 'add', 'save.do'),
+	(13, 7, '修改', 'edit', 'getId.do|save.do'),
+	(14, 7, '删除', 'remove', 'delete.do'),
+	(15, 8, '授权', 'authRole', '/sysUser/getUser.do|/sysUser/addUserRole.do'),
+	(22, 14, '添加', 'add', 'save.do'),
+	(23, 14, '修改', 'edit', 'getId.do|save.do'),
+	(24, 14, '删除', 'remove', 'delete.do');
+/*!40000 ALTER TABLE `sys_menu_btn` ENABLE KEYS */;
+
+
+-- 导出  表 czb.sys_role 结构
+CREATE TABLE IF NOT EXISTS `sys_role` (
+  `id` INT(12) NOT NULL AUTO_INCREMENT COMMENT 'id主键',
+  `roleName` VARCHAR(30) DEFAULT NULL COMMENT '角色名称',
+  `createTime` DATETIME DEFAULT NULL COMMENT '创建时间',
+  `createBy` INT(11) DEFAULT NULL COMMENT '创建人',
+  `updateTime` DATETIME DEFAULT NULL COMMENT '修改时间',
+  `updateBy` INT(11) DEFAULT NULL COMMENT '修改人',
+  `state` INT(1) DEFAULT NULL COMMENT '状态0=可用 1=禁用',
+  `descr` VARCHAR(200) DEFAULT NULL COMMENT '角色描述',
+  PRIMARY KEY (`id`)
+) ENGINE=MYISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+
+-- 正在导出表  czb.sys_role 的数据：4 rows
+/*!40000 ALTER TABLE `sys_role` DISABLE KEYS */;
+INSERT INTO `sys_role` (`id`, `roleName`, `createTime`, `createBy`, `updateTime`, `updateBy`, `state`, `descr`) VALUES
+	(1, '系统管理员', '2013-01-05 16:07:00', NULL, '2013-01-14 11:28:29', NULL, 0, NULL),
+	(3, '管理员', '2013-01-06 10:45:06', NULL, '2013-01-14 11:22:38', NULL, 0, NULL),
+	(18, '站点管理', '2013-01-13 01:21:46', NULL, '2013-01-13 01:21:54', NULL, 0, '站点管理'),
+	(19, '测试管理员', '2013-01-13 17:10:21', NULL, '2013-01-13 19:17:24', NULL, 0, NULL);
+/*!40000 ALTER TABLE `sys_role` ENABLE KEYS */;
+
+
+-- 导出  表 czb.sys_role_rel 结构
+CREATE TABLE IF NOT EXISTS `sys_role_rel` (
+  `roleId` INT(11) NOT NULL COMMENT '角色主键 sys_role.id',
+  `objId` INT(11) NOT NULL COMMENT '关联主键 type=0管理sys_menu.id, type=1关联sys_user.id',
+  `relType` INT(1) DEFAULT NULL COMMENT '关联类型 0=菜单,1=用户'
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+-- 正在导出表  czb.sys_role_rel 的数据：~45 rows (大约)
+/*!40000 ALTER TABLE `sys_role_rel` DISABLE KEYS */;
+INSERT INTO `sys_role_rel` (`roleId`, `objId`, `relType`) VALUES
+	(1, 3, 1),
+	(18, 3, 0),
+	(18, 19, 2),
+	(18, 20, 2),
+	(18, 16, 2),
+	(18, 17, 2),
+	(18, 5, 1),
+	(3, 5, 1),
+	(19, 8, 0),
+	(19, 1, 0),
+	(19, 2, 0),
+	(19, 6, 0),
+	(19, 7, 0),
+	(19, 3, 0),
+	(19, 7, 2),
+	(19, 8, 2),
+	(19, 10, 2),
+	(19, 13, 2),
+	(19, 15, 2),
+	(19, 19, 2),
+	(19, 20, 2),
+	(19, 16, 2),
+	(19, 17, 2),
+	(3, 8, 0),
+	(3, 1, 0),
+	(3, 2, 0),
+	(3, 6, 0),
+	(3, 7, 0),
+	(3, 5, 2),
+	(3, 8, 2),
+	(3, 9, 2),
+	(3, 12, 2),
+	(3, 13, 2),
+	(3, 15, 2),
+	(1, 3, 0),
+	(1, 19, 2),
+	(1, 20, 2),
+	(1, 21, 2),
+	(1, 16, 2),
+	(1, 17, 2),
+	(1, 18, 2),
+	(18, 6, 1),
+	(3, 6, 1),
+	(1, 6, 1),
+	(19, 6, 1);
+/*!40000 ALTER TABLE `sys_role_rel` ENABLE KEYS */;
+
+
+-- 导出  表 czb.sys_user 结构
+CREATE TABLE IF NOT EXISTS `sys_user` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'id主键',
+  `userName` VARCHAR(50) NOT NULL COMMENT '邮箱也是登录帐号',
+  `pwd` VARCHAR(50) DEFAULT NULL COMMENT '登录密码',
+  `nickName` VARCHAR(50) DEFAULT NULL COMMENT '昵称',
+  `state` INT(1) NOT NULL DEFAULT '0' COMMENT '状态， 0=可用,1=禁用',
+  `loginCount` INT(11) DEFAULT NULL COMMENT '登录总次数',
+  `loginTime` DATETIME DEFAULT NULL COMMENT '最后登录时间',
+  `deleted` INT(1) NOT NULL DEFAULT '0' COMMENT '删除状态， 0=未删除,1=已删除',
+  `createTime` DATETIME DEFAULT NULL COMMENT '创建时间',
+  `updateTime` DATETIME DEFAULT NULL COMMENT '修改时间',
+  `createBy` INT(11) DEFAULT NULL COMMENT '创建人',
+  `updateBy` INT(11) DEFAULT NULL COMMENT '修改人',
+  `superAdmin` INT(1) NOT NULL DEFAULT '0' COMMENT '是否超级管理员 0= 不是，1=是',
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
+-- 正在导出表  czb.sys_user 的数据：~5 rows (大约)
+/*!40000 ALTER TABLE `sys_user` DISABLE KEYS */;
+INSERT INTO `sys_user` (`id`, `userName`, `pwd`, `nickName`, `state`, `loginCount`, `loginTime`, `deleted`, `createTime`, `updateTime`, `createBy`, `updateBy`, `superAdmin`) VALUES
+	(1, 'admin@qq.com', 'C33367701511B4F6020EC61DED352059', '超级大Boss', 0, 912, '2015-12-04 15:38:27', 0, '2012-12-23 23:01:15', '2015-12-04 15:37:57', NULL, NULL, 1),
+	(3, '362217990@qq.com', 'E10ADC3949BA59ABBE56E057F20F883E', 'vowo133233', 0, 1, '2013-01-07 12:53:29', 0, '2012-12-23 23:17:39', '2013-01-13 03:33:41', NULL, NULL, 0),
+	(5, 'wolf@qq.com', 'E10ADC3949BA59ABBE56E057F20F883E', '大灰狼', 0, 69, '2013-01-14 14:32:12', 0, '2013-01-07 12:30:10', '2013-01-14 14:32:12', NULL, NULL, 0),
+	(6, 'youke@qq.com', NULL, ' 游客', 0, NULL, NULL, 0, '2013-01-13 03:41:32', '2013-01-13 03:41:32', NULL, NULL, 0),
+	(7, '1111', '123', '131213', 0, NULL, NULL, 0, '2015-05-18 19:57:42', '2015-05-18 19:57:42', NULL, NULL, 0);
+/*!40000 ALTER TABLE `sys_user` ENABLE KEYS */;
+
+
+-- 导出  表 czb.user_info 结构
+CREATE TABLE IF NOT EXISTS `user_info` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+  `login_name` VARCHAR(50) DEFAULT NULL COMMENT '登陆名',
+  `login_pwd` VARCHAR(50) DEFAULT NULL COMMENT '登陆密码',
+  `nick_name` VARCHAR(50) DEFAULT NULL COMMENT '昵称',
+  `phone` VARCHAR(15) DEFAULT NULL COMMENT '手机号',
+  `age` INT(5) DEFAULT NULL COMMENT '年龄',
+  `sex` INT(1) DEFAULT NULL COMMENT '性别，1： 男；2：女',
+  `email` VARCHAR(50) DEFAULT NULL COMMENT '电子邮箱',
+  `college` VARCHAR(50) DEFAULT NULL COMMENT '所在院校',
+  `user_name` VARCHAR(15) DEFAULT NULL COMMENT '用户姓名',
+  `identity_card` VARCHAR(20) DEFAULT NULL COMMENT '身份证',
+  `pic_url` VARCHAR(150) DEFAULT NULL COMMENT '头像图片地址',
+  `birthday` DATETIME DEFAULT NULL COMMENT '出生年月日',
+  `state` VARCHAR(5) DEFAULT NULL COMMENT '状态',
+  `create_date` DATETIME DEFAULT NULL COMMENT '创建时间',
+  `update_date` DATETIME DEFAULT NULL COMMENT '修改时间',
+  `deleted` INT(1) DEFAULT NULL COMMENT '删除标记',
+  `region_id` BIGINT(20) DEFAULT NULL COMMENT '区域ID',
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COMMENT='用户信息';
+
+-- 正在导出表  czb.user_info 的数据：~11 rows (大约)
+/*!40000 ALTER TABLE `user_info` DISABLE KEYS */;
+INSERT INTO `user_info` (`id`, `login_name`, `login_pwd`, `nick_name`, `phone`, `age`, `sex`, `email`, `college`, `user_name`, `identity_card`, `pic_url`, `birthday`, `state`, `create_date`, `update_date`, `deleted`, `region_id`) VALUES
+	(19, '18628469291', '508DF4CB2F4D8F80519256258CFB975F', '杜谋', NULL, 12, 1, '724012646@qq.com', '西安建筑科技大学', NULL, NULL, '/img/F/217.jpg', NULL, 'B', NULL, NULL, 0, NULL),
+	(20, '15929630809', 'E10ADC3949BA59ABBE56E057F20F883E', '我可是好人', NULL, 12, 1, '724012646@qq.com', '口袋大学', NULL, NULL, '/img/F/194.jpg', NULL, 'B', NULL, NULL, 0, NULL),
+	(21, '18637616231', '0960FD216322B1EEE2C5F2A4566EE8C3', '186376', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'img/head.jpg', NULL, 'A', NULL, NULL, 0, NULL),
+	(22, '15619267257', 'FCAFB2073837EE7426B31B552D9184DE', '198914', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'img/head.jpg', NULL, 'A', NULL, NULL, 0, NULL),
+	(23, '15191863529', '567883D7DB90CE5F2D2B47778335B3BA', '杜楠', NULL, 12, 1, '724012646@qq.com', '西安建筑科技大学', NULL, NULL, '/img/F/224.jpg', NULL, 'B', NULL, NULL, 0, NULL),
+	(24, '18691012413', 'D0970714757783E6CF17B26FB8E2298F', '霹雳无敌帅朝朝', NULL, 12, 1, '724012646@qq.com', '大陕工', NULL, NULL, '/img/F/226.jpg', NULL, 'B', NULL, NULL, 0, NULL),
+	(25, '15591870089', '97F164B4C1AD3BBF876B4B322EA1A68B', '363636', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'img/head.jpg', NULL, 'A', NULL, NULL, 0, NULL),
+	(26, '18308311660', '351E07728ECE5C08C65C057B5CEEF049', '789012', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'img/head.jpg', NULL, 'A', NULL, NULL, 0, NULL),
+	(27, '15889783053', 'E10ADC3949BA59ABBE56E057F20F883E', '123456', NULL, 12, 1, '724012646@qq.com', 'null', NULL, NULL, '/img/F/228.jpg', NULL, 'B', NULL, NULL, 0, NULL),
+	(28, '15843313911', '4297F44B13955235245B2497399D7A93', '123123', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'img/head.jpg', NULL, 'A', NULL, NULL, 0, NULL),
+	(29, '18789413180', 'E10ADC3949BA59ABBE56E057F20F883E', '123456', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'img/head.jpg', NULL, 'A', NULL, NULL, 0, NULL);
+/*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
+
+
+-- 导出  表 czb.user_login_log 结构
+CREATE TABLE IF NOT EXISTS `user_login_log` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '日志ID',
+  `user_id` BIGINT(20) DEFAULT NULL COMMENT '用户ID',
+  `ip_address` VARCHAR(15) DEFAULT NULL COMMENT '登陆IP',
+  `login_date` DATETIME DEFAULT NULL COMMENT '登陆时间',
+  `note` VARCHAR(50) DEFAULT NULL COMMENT '说明',
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=1229 DEFAULT CHARSET=utf8 COMMENT='用户登陆日志';
+
+-- 正在导出表  czb.user_login_log 的数据：~259 rows (大约)
+/*!40000 ALTER TABLE `user_login_log` DISABLE KEYS */;
+INSERT INTO `user_login_log` (`id`, `user_id`, `ip_address`, `login_date`, `note`) VALUES
+	(970, 17, '36.44.167.204', '2015-08-27 22:37:24', NULL),
+	(971, 17, '36.44.167.204', '2015-08-27 22:54:10', NULL),
+	(972, 17, '36.44.167.204', '2015-08-27 22:55:42', NULL),
+	(973, 17, '36.44.167.204', '2015-08-27 22:56:19', NULL),
+	(974, 17, '36.44.167.204', '2015-08-27 23:03:31', NULL),
+	(975, 17, '36.44.167.204', '2015-08-27 23:45:11', NULL),
+	(976, 17, '36.44.167.204', '2015-08-27 23:45:11', NULL),
+	(977, 17, '36.44.167.204', '2015-08-27 23:45:11', NULL),
+	(978, 17, '36.44.167.204', '2015-08-27 23:45:11', NULL),
+	(979, 17, '36.44.167.204', '2015-08-27 23:47:19', NULL),
+	(980, 17, '36.44.167.204', '2015-08-27 23:52:04', NULL),
+	(981, 17, '36.44.167.204', '2015-08-27 23:54:32', NULL),
+	(982, 17, '36.44.167.204', '2015-08-27 23:58:32', NULL),
+	(983, 17, '36.44.167.204', '2015-08-28 00:01:17', NULL),
+	(984, 17, '36.44.167.204', '2015-08-28 00:06:25', NULL),
+	(985, 17, '36.44.167.204', '2015-08-28 00:10:56', NULL),
+	(986, 17, '36.44.167.204', '2015-08-28 00:17:14', NULL),
+	(987, 17, '36.44.167.204', '2015-08-28 00:26:15', NULL),
+	(988, 17, '36.44.167.204', '2015-08-28 00:38:00', NULL),
+	(989, 17, '36.44.167.204', '2015-08-28 00:46:34', NULL),
+	(990, 17, '36.44.167.204', '2015-08-28 00:51:22', NULL),
+	(991, 17, '36.44.167.204', '2015-08-28 00:56:42', NULL),
+	(992, 17, '36.44.167.204', '2015-08-28 01:09:54', NULL),
+	(993, 17, '36.44.167.204', '2015-08-28 01:14:50', NULL),
+	(994, 17, '36.44.167.204', '2015-08-28 01:16:41', NULL),
+	(995, 17, '36.44.167.204', '2015-08-28 01:17:35', NULL),
+	(996, 17, '36.44.167.204', '2015-08-28 01:21:30', NULL),
+	(997, 17, '36.44.167.204', '2015-08-28 01:24:45', NULL),
+	(998, 17, '36.44.167.204', '2015-08-28 01:29:37', NULL),
+	(999, 17, '36.44.167.204', '2015-08-28 01:33:58', NULL),
+	(1000, 17, '36.44.167.204', '2015-08-28 01:39:30', NULL),
+	(1001, 17, '36.44.167.204', '2015-08-28 02:17:12', NULL),
+	(1002, 17, '36.44.167.204', '2015-08-28 02:19:15', NULL),
+	(1003, 17, '36.44.167.204', '2015-08-28 02:21:41', NULL),
+	(1004, 17, '36.44.167.204', '2015-08-28 02:26:09', NULL),
+	(1005, 20, '36.44.167.204', '2015-08-28 02:30:44', NULL),
+	(1006, 20, '36.44.167.204', '2015-08-28 02:31:31', NULL),
+	(1007, 17, '36.44.167.204', '2015-08-28 02:32:30', NULL),
+	(1008, 17, '36.44.167.204', '2015-08-28 02:32:41', NULL),
+	(1009, 17, '36.44.167.204', '2015-08-28 02:34:40', NULL),
+	(1010, 17, '36.44.167.204', '2015-08-28 02:38:24', NULL),
+	(1011, 17, '36.44.167.204', '2015-08-28 02:43:35', NULL),
+	(1012, 17, '36.44.167.204', '2015-08-28 02:44:57', NULL),
+	(1013, 17, '36.44.167.204', '2015-08-28 02:45:09', NULL),
+	(1014, 17, '36.44.167.204', '2015-08-28 02:47:02', NULL),
+	(1015, 17, '36.44.167.204', '2015-08-28 02:48:06', NULL),
+	(1016, 17, '36.44.167.204', '2015-08-28 02:52:01', NULL),
+	(1017, 17, '36.44.167.204', '2015-08-28 02:52:08', NULL),
+	(1018, 17, '36.44.167.204', '2015-08-28 02:57:54', NULL),
+	(1019, 17, '36.44.167.204', '2015-08-28 03:02:54', NULL),
+	(1020, 17, '36.44.167.204', '2015-08-28 03:02:54', NULL),
+	(1021, 17, '36.44.167.204', '2015-08-28 03:05:41', NULL),
+	(1022, 17, '36.44.167.204', '2015-08-28 03:12:15', NULL),
+	(1023, 17, '36.44.167.204', '2015-08-28 03:28:24', NULL),
+	(1024, 17, '36.44.167.204', '2015-08-28 03:32:23', NULL),
+	(1025, 17, '36.44.167.204', '2015-08-28 03:33:45', NULL),
+	(1026, 17, '36.44.167.204', '2015-08-28 03:35:26', NULL),
+	(1027, 17, '36.44.167.204', '2015-08-28 03:37:43', NULL),
+	(1028, 17, '36.44.167.204', '2015-08-28 03:40:05', NULL),
+	(1029, 17, '36.44.167.204', '2015-08-28 08:42:25', NULL),
+	(1030, 17, '36.44.167.204', '2015-08-28 09:00:38', NULL),
+	(1031, 17, '36.44.167.204', '2015-08-28 09:03:11', NULL),
+	(1032, 17, '36.44.167.204', '2015-08-28 09:06:17', NULL),
+	(1033, 17, '36.44.167.204', '2015-08-28 09:07:58', NULL),
+	(1034, 17, '36.44.167.204', '2015-08-28 09:10:32', NULL),
+	(1035, 17, '36.44.167.204', '2015-08-28 09:16:52', NULL),
+	(1036, 17, '36.44.167.204', '2015-08-28 09:21:02', NULL),
+	(1037, 17, '36.44.167.204', '2015-08-28 09:22:29', NULL),
+	(1038, 17, '36.44.167.204', '2015-08-28 09:27:56', NULL),
+	(1039, 17, '36.44.167.204', '2015-08-28 09:34:38', NULL),
+	(1040, 17, '36.44.167.204', '2015-08-28 09:39:22', NULL),
+	(1041, 17, '36.44.167.204', '2015-08-28 09:41:50', NULL),
+	(1042, 17, '36.44.167.204', '2015-08-28 10:05:16', NULL),
+	(1043, 17, '36.44.167.204', '2015-08-28 10:10:09', NULL),
+	(1044, 17, '36.44.167.204', '2015-08-28 10:31:44', NULL),
+	(1045, 17, '36.44.167.204', '2015-08-28 10:52:42', NULL),
+	(1046, 20, '36.44.167.204', '2015-08-28 10:55:42', NULL),
+	(1047, 17, '36.44.167.204', '2015-08-28 10:56:53', NULL),
+	(1048, 17, '36.44.167.204', '2015-08-28 10:59:30', NULL),
+	(1049, 19, '36.44.167.204', '2015-08-28 11:02:30', NULL),
+	(1050, 19, '36.44.167.204', '2015-08-28 11:05:04', NULL),
+	(1051, 17, '61.185.160.165', '2015-08-28 11:29:41', NULL),
+	(1052, 17, '61.185.160.165', '2015-08-28 11:35:03', NULL),
+	(1053, 20, '61.185.160.165', '2015-08-28 11:38:49', NULL),
+	(1054, 17, '61.185.160.165', '2015-08-28 11:39:09', NULL),
+	(1055, 20, '61.185.160.165', '2015-08-28 11:41:07', NULL),
+	(1056, 17, '61.185.160.165', '2015-08-28 11:43:52', NULL),
+	(1057, 20, '61.185.160.165', '2015-08-28 11:44:05', NULL),
+	(1058, 19, '61.185.160.165', '2015-08-28 11:44:54', NULL),
+	(1059, 17, '61.185.160.165', '2015-08-28 11:45:48', NULL),
+	(1060, 17, '61.185.160.165', '2015-08-28 11:46:23', NULL),
+	(1061, 19, '61.185.160.165', '2015-08-28 11:46:47', NULL),
+	(1062, 20, '61.185.160.165', '2015-08-28 11:47:20', NULL),
+	(1063, 20, '61.185.160.165', '2015-08-28 11:50:36', NULL),
+	(1064, 20, '61.185.160.165', '2015-08-28 11:50:48', NULL),
+	(1065, 20, '61.185.160.165', '2015-08-28 11:52:38', NULL),
+	(1066, 20, '61.185.160.165', '2015-08-28 11:57:02', NULL),
+	(1067, 17, '61.185.160.165', '2015-08-28 12:07:15', NULL),
+	(1068, 19, '61.185.160.165', '2015-08-28 12:10:44', NULL),
+	(1069, 19, '61.185.160.165', '2015-08-28 12:13:02', NULL),
+	(1070, 17, '61.185.160.165', '2015-08-28 12:15:06', NULL),
+	(1071, 17, '223.104.11.225', '2015-08-28 12:18:16', NULL),
+	(1072, 20, '223.104.11.105', '2015-08-28 12:38:58', NULL),
+	(1073, 17, '61.185.160.165', '2015-08-28 13:47:30', NULL),
+	(1074, 17, '61.185.160.165', '2015-08-28 13:48:16', NULL),
+	(1075, 17, '61.185.160.165', '2015-08-28 13:54:17', NULL),
+	(1076, 17, '61.185.160.165', '2015-08-28 13:54:50', NULL),
+	(1077, 17, '61.185.160.165', '2015-08-28 13:55:32', NULL),
+	(1078, 17, '61.185.160.165', '2015-08-28 13:56:24', NULL),
+	(1079, 17, '61.185.160.165', '2015-08-28 13:56:59', NULL),
+	(1080, 17, '61.185.160.165', '2015-08-28 13:57:29', NULL),
+	(1081, 17, '61.185.160.165', '2015-08-28 13:58:03', NULL),
+	(1082, 17, '61.185.160.165', '2015-08-28 14:00:06', NULL),
+	(1083, 17, '61.185.160.165', '2015-08-28 14:04:51', NULL),
+	(1084, 17, '61.185.160.165', '2015-08-28 14:05:57', NULL),
+	(1085, 17, '61.185.160.165', '2015-08-28 14:08:37', NULL),
+	(1086, 17, '61.185.160.165', '2015-08-28 14:29:51', NULL),
+	(1087, 17, '61.185.160.165', '2015-08-28 14:31:44', NULL),
+	(1088, 17, '61.185.160.165', '2015-08-28 14:37:28', NULL),
+	(1089, 19, '61.185.160.165', '2015-08-28 14:41:02', NULL),
+	(1090, 17, '61.185.160.165', '2015-08-28 14:41:36', NULL),
+	(1091, 20, '61.185.160.165', '2015-08-28 14:43:54', NULL),
+	(1092, 17, '61.185.160.165', '2015-08-28 14:44:14', NULL),
+	(1093, 17, '61.185.160.165', '2015-08-28 14:55:31', NULL),
+	(1094, 17, '61.185.160.165', '2015-08-28 14:55:38', NULL),
+	(1095, 20, '61.185.160.165', '2015-08-28 15:01:36', NULL),
+	(1096, 20, '61.185.160.165', '2015-08-28 15:03:38', NULL),
+	(1097, 20, '61.185.160.165', '2015-08-28 15:05:09', NULL),
+	(1098, 17, '61.185.160.165', '2015-08-28 15:11:01', NULL),
+	(1099, 17, '61.185.160.165', '2015-08-28 15:12:00', NULL),
+	(1100, 17, '61.185.160.165', '2015-08-28 15:16:24', NULL),
+	(1101, 20, '61.185.160.165', '2015-08-28 15:27:18', NULL),
+	(1102, 17, '61.185.160.165', '2015-08-28 15:46:39', NULL),
+	(1103, 17, '61.185.160.165', '2015-08-28 15:47:50', NULL),
+	(1104, 17, '61.185.160.165', '2015-08-28 15:52:26', NULL),
+	(1105, 20, '61.185.160.165', '2015-08-28 16:23:00', NULL),
+	(1106, 19, '61.185.160.165', '2015-08-28 16:26:15', NULL),
+	(1107, 20, '61.185.160.165', '2015-08-28 16:27:00', NULL),
+	(1108, 20, '61.185.160.165', '2015-08-28 16:28:31', NULL),
+	(1109, 20, '61.185.160.165', '2015-08-28 16:29:02', NULL),
+	(1110, 20, '61.185.160.165', '2015-08-28 16:30:20', NULL),
+	(1111, 17, '61.185.160.165', '2015-08-28 16:42:33', NULL),
+	(1112, 17, '61.185.160.165', '2015-08-28 16:45:26', NULL),
+	(1113, 20, '61.185.160.165', '2015-08-28 16:50:35', NULL),
+	(1114, 20, '61.185.160.165', '2015-08-28 17:10:47', NULL),
+	(1115, 20, '61.185.160.165', '2015-08-28 17:13:11', NULL),
+	(1116, 20, '61.185.160.165', '2015-08-28 17:13:49', NULL),
+	(1117, 17, '61.185.160.165', '2015-08-28 17:17:56', NULL),
+	(1118, 17, '61.185.160.165', '2015-08-28 17:33:51', NULL),
+	(1119, 17, '61.185.160.165', '2015-08-28 17:35:35', NULL),
+	(1120, 17, '61.185.160.165', '2015-08-28 17:37:17', NULL),
+	(1121, 19, '61.185.160.165', '2015-08-28 17:40:34', NULL),
+	(1122, 17, '61.185.160.165', '2015-08-28 17:41:56', NULL),
+	(1123, 17, '61.185.160.165', '2015-08-28 17:44:02', NULL),
+	(1124, 17, '61.185.160.165', '2015-08-28 17:48:05', NULL),
+	(1125, 17, '61.185.160.165', '2015-08-28 17:49:26', NULL),
+	(1126, 17, '61.185.160.165', '2015-08-28 17:52:35', NULL),
+	(1127, 17, '61.185.160.165', '2015-08-28 18:05:50', NULL),
+	(1128, 17, '61.185.160.165', '2015-08-28 18:09:34', NULL),
+	(1129, 20, '61.185.160.165', '2015-08-28 18:30:13', NULL),
+	(1130, 19, '113.132.168.225', '2015-08-28 21:20:32', NULL),
+	(1131, 17, '106.36.205.35', '2015-08-28 22:49:45', NULL),
+	(1132, 17, '106.36.205.35', '2015-08-28 23:06:13', NULL),
+	(1133, 21, '61.158.186.37', '2015-08-29 06:58:08', NULL),
+	(1134, 17, '106.36.205.35', '2015-08-29 10:14:40', NULL),
+	(1135, 17, '106.36.205.35', '2015-08-29 10:16:42', NULL),
+	(1136, 17, '106.36.205.35', '2015-08-29 10:17:14', NULL),
+	(1137, 17, '117.136.25.104', '2015-08-29 11:40:38', NULL),
+	(1138, 17, '117.136.25.104', '2015-08-29 11:40:40', NULL),
+	(1139, 17, '117.136.25.104', '2015-08-29 11:41:54', NULL),
+	(1140, 17, '61.185.160.165', '2015-08-29 14:20:20', NULL),
+	(1141, 19, '61.185.160.165', '2015-08-29 14:33:22', NULL),
+	(1142, 19, '61.185.160.165', '2015-08-29 14:46:35', NULL),
+	(1143, 19, '61.185.160.165', '2015-08-29 15:16:39', NULL),
+	(1144, 20, '61.185.160.165', '2015-08-29 15:17:04', NULL),
+	(1145, 19, '61.185.160.165', '2015-08-29 15:34:22', NULL),
+	(1146, 19, '61.185.160.165', '2015-08-29 15:37:32', NULL),
+	(1147, 19, '61.185.160.165', '2015-08-29 15:42:58', NULL),
+	(1148, 19, '61.185.160.165', '2015-08-29 15:44:28', NULL),
+	(1149, 19, '61.185.160.165', '2015-08-29 15:51:24', NULL),
+	(1150, 19, '61.185.160.165', '2015-08-29 15:55:17', NULL),
+	(1151, 19, '223.104.11.81', '2015-08-29 22:27:19', NULL),
+	(1152, 19, '223.104.11.81', '2015-08-29 22:27:22', NULL),
+	(1153, 19, '223.104.11.81', '2015-08-29 22:27:24', NULL),
+	(1154, 22, '117.38.255.68', '2015-08-30 13:06:43', NULL),
+	(1155, 22, '113.200.204.50', '2015-08-30 13:24:51', NULL),
+	(1156, 22, '113.200.204.50', '2015-08-30 13:25:49', NULL),
+	(1157, 19, '124.114.217.102', '2015-08-30 14:13:36', NULL),
+	(1158, 20, '117.38.255.68', '2015-08-30 14:30:56', NULL),
+	(1159, 20, '117.38.255.68', '2015-08-30 14:32:47', NULL),
+	(1160, 20, '117.38.255.68', '2015-08-30 14:33:29', NULL),
+	(1161, 19, '124.114.217.102', '2015-08-30 14:45:20', NULL),
+	(1162, 19, '124.114.217.102', '2015-08-30 14:47:35', NULL),
+	(1163, 19, '124.114.217.102', '2015-08-30 14:50:33', NULL),
+	(1164, 19, '124.114.217.102', '2015-08-30 14:51:08', NULL),
+	(1165, 20, '117.38.255.68', '2015-08-30 15:00:43', NULL),
+	(1166, 20, '117.38.255.68', '2015-08-30 15:00:44', NULL),
+	(1167, 20, '117.38.255.68', '2015-08-30 15:00:44', NULL),
+	(1168, 20, '117.38.255.68', '2015-08-30 15:00:44', NULL),
+	(1169, 20, '117.38.255.68', '2015-08-30 15:00:44', NULL),
+	(1170, 20, '117.38.255.68', '2015-08-30 15:00:45', NULL),
+	(1171, 20, '117.38.255.68', '2015-08-30 15:00:45', NULL),
+	(1172, 19, '124.114.217.102', '2015-08-30 15:04:27', NULL),
+	(1173, 23, '124.114.217.102', '2015-08-30 15:08:57', NULL),
+	(1174, 23, '124.114.217.102', '2015-08-30 15:09:17', NULL),
+	(1175, 23, '124.114.217.102', '2015-08-30 15:09:29', NULL),
+	(1176, 23, '124.114.217.102', '2015-08-30 15:09:39', NULL),
+	(1177, 19, '124.114.217.102', '2015-08-30 15:10:14', NULL),
+	(1178, 23, '124.114.217.102', '2015-08-30 15:14:38', NULL),
+	(1179, 23, '124.114.217.102', '2015-08-30 15:16:32', NULL),
+	(1180, 23, '124.114.217.102', '2015-08-30 15:16:40', NULL),
+	(1181, 23, '124.114.217.102', '2015-08-30 15:48:54', NULL),
+	(1182, 23, '124.114.217.102', '2015-08-30 15:59:46', NULL),
+	(1183, 23, '124.114.217.102', '2015-08-30 15:59:56', NULL),
+	(1184, 17, '1.86.29.183', '2015-08-30 16:56:11', NULL),
+	(1185, 19, '124.114.217.102', '2015-08-30 17:51:49', NULL),
+	(1186, 19, '124.114.217.102', '2015-08-30 17:52:01', NULL),
+	(1187, 19, '124.114.217.102', '2015-08-30 17:52:36', NULL),
+	(1188, 23, '124.114.217.102', '2015-08-30 17:52:43', NULL),
+	(1189, 19, '124.114.217.102', '2015-08-30 17:52:45', NULL),
+	(1190, 23, '124.114.217.102', '2015-08-30 17:59:05', NULL),
+	(1191, 23, '113.143.225.25', '2015-08-30 19:58:07', NULL),
+	(1192, 24, '120.192.232.180', '2015-08-30 20:23:38', NULL),
+	(1193, 24, '120.192.232.180', '2015-08-30 20:24:20', NULL),
+	(1194, 24, '120.192.232.180', '2015-08-30 20:32:54', NULL),
+	(1195, 24, '120.192.232.180', '2015-08-30 20:35:49', NULL),
+	(1196, 19, '124.114.217.102', '2015-08-30 20:53:27', NULL),
+	(1197, 19, '124.114.217.102', '2015-08-30 21:36:31', NULL),
+	(1198, 24, '120.192.232.180', '2015-08-30 21:55:36', NULL),
+	(1199, 24, '120.192.232.180', '2015-08-30 22:27:53', NULL),
+	(1200, 24, '120.192.232.180', '2015-08-31 06:36:10', NULL),
+	(1201, 24, '120.192.232.180', '2015-08-31 06:36:18', NULL),
+	(1202, 25, '1.86.29.183', '2015-08-31 09:29:27', NULL),
+	(1203, 25, '1.86.29.183', '2015-08-31 09:29:58', NULL),
+	(1204, 25, '1.86.29.183', '2015-08-31 09:31:16', NULL),
+	(1205, 24, '1.86.29.183', '2015-08-31 10:07:35', NULL),
+	(1206, 24, '1.86.29.183', '2015-08-31 10:08:02', NULL),
+	(1207, 25, '113.200.204.5', '2015-08-31 12:18:19', NULL),
+	(1208, 25, '1.86.29.183', '2015-08-31 15:18:37', NULL),
+	(1209, 25, '1.86.29.183', '2015-08-31 15:21:01', NULL),
+	(1210, 25, '1.86.29.183', '2015-08-31 15:21:21', NULL),
+	(1211, 25, '1.86.29.183', '2015-08-31 15:21:34', NULL),
+	(1212, 25, '1.86.29.183', '2015-08-31 16:08:43', NULL),
+	(1213, 25, '1.86.29.183', '2015-08-31 16:10:43', NULL),
+	(1214, 25, '1.86.29.183', '2015-08-31 16:10:59', NULL),
+	(1215, 25, '1.86.29.183', '2015-08-31 16:18:26', NULL),
+	(1216, 25, '1.86.29.183', '2015-08-31 16:18:55', NULL),
+	(1217, 25, '1.86.29.183', '2015-08-31 16:22:20', NULL),
+	(1218, 25, '1.86.29.183', '2015-08-31 16:27:18', NULL),
+	(1219, 19, '223.104.11.240', '2015-08-31 18:43:11', NULL),
+	(1220, 26, '118.120.173.169', '2015-08-31 21:35:07', NULL),
+	(1221, 25, '1.84.161.13', '2015-09-01 09:53:21', NULL),
+	(1222, 25, '1.84.161.13', '2015-09-01 10:33:06', NULL),
+	(1223, 27, '59.37.125.36', '2015-09-01 10:53:17', NULL),
+	(1224, 23, '117.35.57.3', '2015-09-01 11:10:53', NULL),
+	(1225, 28, '139.208.89.163', '2015-09-01 13:19:11', NULL),
+	(1226, 23, '117.35.57.2', '2015-09-01 13:46:23', NULL),
+	(1227, 23, '117.35.57.2', '2015-09-01 13:59:08', NULL),
+	(1228, 23, '117.35.57.2', '2015-09-01 14:24:34', NULL);
+/*!40000 ALTER TABLE `user_login_log` ENABLE KEYS */;
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

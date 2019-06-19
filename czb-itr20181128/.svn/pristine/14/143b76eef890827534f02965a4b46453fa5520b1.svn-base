@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.agent.czb.web.system.mapper.DataDictMapper" >
+    <!-- Result Map-->
+    <resultMap id="BaseResultMap" type="com.agent.czb.web.system.bean.DataDict" >
+        <id column="dict_id" property="dictId"/>
+		<result column="parent_dict_id" property="parentDictId"/>
+		<result column="dict_name" property="dictName"/>
+		<result column="dict_code" property="dictCode"/>
+		<result column="dict_key" property="dictKey"/>
+		<result column="dict_value" property="dictValue"/>
+		<result column="note" property="note"/>
+		<result column="user_id" property="userId"/>
+		<result column="update_date" property="updateDate"/>
+		<result column="create_date" property="createDate"/>
+    </resultMap>
+
+    <!-- data_dict 表的所有字段 -->
+    <sql id="Base_Column_List" >
+		dict_id, parent_dict_id, dict_name, dict_code, dict_key, dict_value, note, user_id, update_date, create_date
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="Example_Where_Clause">
+        <where>
+			<if test="dictId != null" >
+				and dict_id = #{dictId}
+			</if>
+			<if test="parentDictId != null" >
+				and parent_dict_id = #{parentDictId}
+			</if>
+			<if test="dictName != null and dictName != ''" >
+				and dict_name = #{dictName}
+			</if>
+			<if test="dictCode != null" >
+				and dict_code = #{dictCode}
+			</if>
+			<if test="dictKey != null" >
+				and dict_key = #{dictKey}
+			</if>
+			<if test="dictValue != null" >
+				and dict_value = #{dictValue}
+			</if>
+			<if test="note != null" >
+				and note = #{note}
+			</if>
+			<if test="userId != null" >
+				and user_id = #{userId}
+			</if>
+			<if test="updateDate != null" >
+				and update_date = #{updateDate}
+			</if>
+			<if test="createDate != null" >
+				and create_date = #{createDate}
+			</if>
+		</where>
+    </sql>
+
+    <!-- 插入记录 -->
+    <insert id="add" parameterType="Object" >
+        insert into data_dict (dict_id, parent_dict_id, dict_name, dict_code, dict_key, dict_value, note, user_id, update_date, create_date)
+        values (#{dictId}, #{parentDictId}, #{dictName}, #{dictCode}, #{dictKey}, #{dictValue}, #{note}, #{userId}, #{updateDate}, #{createDate})
+    </insert>
+
+    <!-- 根据id，修改记录-->
+    <update id="update" parameterType="Object" >
+        update data_dict
+			set
+				dict_id=#{dictId}, 
+				parent_dict_id=#{parentDictId}, 
+				dict_name=#{dictName}, 
+				dict_code=#{dictCode}, 
+				dict_key=#{dictKey}, 
+				dict_value=#{dictValue}, 
+				note=#{note}, 
+				user_id=#{userId}, 
+				update_date=#{updateDate}, 
+				create_date=#{createDate}
+        	where
+				dict_id=#{dictId}
+    </update>
+
+    <!-- 修改记录，只修改只不为空的字段 -->
+    <update id="updateBySelective" parameterType="Object" >
+        update data_dict
+			set
+                <trim  suffixOverrides="," >
+                    <if test="dictId != null  ">
+						dict_id=#{dictId},
+                    </if>
+                    <if test="parentDictId != null  ">
+						parent_dict_id=#{parentDictId},
+                    </if>
+                    <if test="dictName != null  ">
+						dict_name=#{dictName},
+                    </if>
+                    <if test="dictCode != null  ">
+						dict_code=#{dictCode},
+                    </if>
+                    <if test="dictKey != null  ">
+						dict_key=#{dictKey},
+                    </if>
+                    <if test="dictValue != null  ">
+						dict_value=#{dictValue},
+                    </if>
+                    <if test="note != null  ">
+						note=#{note},
+                    </if>
+                    <if test="userId != null  ">
+						user_id=#{userId},
+                    </if>
+                    <if test="updateDate != null  ">
+						update_date=#{updateDate},
+                    </if>
+                    <if test="createDate != null  ">
+						create_date=#{createDate},
+                    </if>
+                </trim>
+			where
+				dict_id=#{dictId}
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="delete" parameterType="Object">
+        delete from data_dict
+			where
+				dict_id=#{dictId}
+    </delete>
+
+    <!-- 根据id查询 -->
+    <select id="queryById"  resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List" />
+        	from data_dict
+			where
+				dict_id=#{dictId}
+    </select>
+
+    <!-- 列表总数-->
+    <select id="queryByCount" resultType="java.lang.Integer" parameterType="Object">
+        select count(1) from data_dict
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="queryByList" resultMap="BaseResultMap" parameterType="Object">
+        select <include refid="Base_Column_List"/>
+        from data_dict where 1=1
+        <include refid="Example_Where_Clause"/>
+        <if test="dictName != null and dictName != ''" >
+				and dict_name = #{dictName}
+			</if>
+        <if test="pager.orderCondition != null and pager.orderCondition != ''" >
+            ${pager.orderCondition}
+        </if>
+        <if test="pager.mysqlQueryCondition != null and pager.mysqlQueryCondition != ''" >
+            ${pager.mysqlQueryCondition}
+        </if>
+    </select>
+</mapper>
