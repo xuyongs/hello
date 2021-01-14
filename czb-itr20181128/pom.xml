@@ -112,7 +112,7 @@
         <velocity.version>1.7</velocity.version>
 
         <!-- excel/pdf 配置-->
-        <poi.version>3.11</poi.version>
+        <poi.version>3.17</poi.version>
         <jxl.version>2.6.12</jxl.version>
         <jxls.version>1.0.6</jxls.version>
         <itext.version>4.2.1</itext.version>
