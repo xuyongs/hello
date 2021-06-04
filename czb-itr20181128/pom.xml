@@ -133,7 +133,7 @@
         <!-- 内存数据库 -->
         <h2.version>1.4.181</h2.version>
 
-        <httpclient.version>4.4</httpclient.version>
+        <httpclient.version>4.5.13</httpclient.version>
 
         <!-- commons 配置 -->
         <commons-httpclient.version>3.1</commons-httpclient.version>
