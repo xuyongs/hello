@@ -116,7 +116,7 @@
         <jxl.version>2.6.12</jxl.version>
         <jxls.version>1.0.6</jxls.version>
         <itext.version>4.2.1</itext.version>
-        <itextpdf.version>5.5.8</itextpdf.version>
+        <itextpdf.version>5.5.12</itextpdf.version>
 
         <!-- 任务调度 配置 -->
         <quartz.version>2.2.1</quartz.version>
