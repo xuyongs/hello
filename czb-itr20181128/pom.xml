@@ -102,7 +102,7 @@
         <cglib-nodep.version>3.1</cglib-nodep.version>
         <spring.version>4.0.8.RELEASE</spring.version>
         <spring-boot-starter.version>1.0.2.RELEASE</spring-boot-starter.version>
-        <spring-data-jpa.version>1.8.0.RELEASE</spring-data-jpa.version>
+        <spring-data-jpa.version>1.11.23.RELEASE</spring-data-jpa.version>
 
         <joda-time.version>2.7</joda-time.version>
         <joda-time-jsptags.version>1.1.1</joda-time-jsptags.version>
